@@ -124,13 +124,15 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 
 	@SuppressWarnings("unchecked")
 	public boolean makeNewSale() throws PreconditionException, PostconditionException, ThirdPartyServiceException {
-		
-		
+
+		Sale currentSale = getCurrentSale();
+
+
 		/* previous state in post-condition*/
 
 		logger.info(String.format("%s", StandardOPs.oclIsundefined(getCurrentCashDesk())));
 		logger.info(String.format("%s", getCurrentCashDesk().getIsOpened()));
-		logger.info(String.format("%s", currentSale));
+		logger.info(String.format("%s", getCurrentSale()));
 
 		/* check precondition */
 		if (StandardOPs.oclIsundefined(getCurrentCashDesk()) == false && getCurrentCashDesk().getIsOpened() == true && (StandardOPs.oclIsundefined(getCurrentSale()) == true || (StandardOPs.oclIsundefined(getCurrentSale()) == false && getCurrentSale().getIsComplete() == true))) 
@@ -194,6 +196,8 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 
 	@SuppressWarnings("unchecked")
 	public boolean enterItem(int barcode, int quantity) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+
+		Sale currentSale = getCurrentSale();
 		
 		
 		/* Code generated for contract definition */
@@ -285,7 +289,7 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 	@SuppressWarnings("unchecked")
 	public float endSale() throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		
-		
+		Sale currentSale = getCurrentSale();
 		/* Code generated for contract definition */
 		//Get sls
 		List<SalesLineItem> sls = new LinkedList<>();
@@ -346,6 +350,8 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 
 	@SuppressWarnings("unchecked")
 	public boolean makeCashPayment(float amount) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+
+		Sale currentSale = getCurrentSale();
 		
 		
 		/* previous state in post-condition*/
@@ -422,6 +428,8 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 
 	@SuppressWarnings("unchecked")
 	public boolean makeCardPayment(String cardAccountNumber, LocalDate expiryDate, float fee) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+
+		Sale currentSale = getCurrentSale();
 		
 		
 		/* previous state in post-condition*/
