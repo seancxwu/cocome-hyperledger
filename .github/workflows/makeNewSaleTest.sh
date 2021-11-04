@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh -e
 
 ./network.sh down
 ./network.sh up createChannel
