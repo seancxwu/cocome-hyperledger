@@ -16,4 +16,7 @@ docker stop $(docker ps -n 1 --filter 'name=dev' --format '{{.ID}}')
 
 pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeNewSale","Args":[]}'
 
-
+if pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeNewSale","Args":[]}'; then
+  echo 'Second makeNewSale call should fail.' >&2
+  exit 1
+fi
