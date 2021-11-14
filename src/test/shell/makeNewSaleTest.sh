@@ -3,6 +3,10 @@
 oneTimeSetUp() {
   export FABRIC_CFG_PATH=$PWD/../config/
 
+  if [[ -z "$GITHUB_WORKSPACE" ]]; then
+    GITHUB_WORKSPACE=~/cocome-hyperledger/
+  fi
+
   source $GITHUB_WORKSPACE/src/test/shell/as-org1.sh
 
   rm -f $GITHUB_WORKSPACE/cocome.tar.gz
