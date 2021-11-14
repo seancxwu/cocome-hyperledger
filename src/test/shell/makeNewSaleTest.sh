@@ -64,4 +64,24 @@ testMakeNewSale() {
   fi
 }
 
+testManageItem() {
+  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageItemCRUDServiceImpl:createItem","Args":["1","cookies","10","10","9"]}' || fail
+
+  docker stop "$(docker ps -n 1 --filter 'name=dev' --format '{{.ID}}')"
+
+  peer chaincode query -C mychannel -n cocome -c '{"function":"ManageItemCRUDServiceImpl:queryItem","Args":["1"]}' || fail
+
+  docker stop "$(docker ps -n 1 --filter 'name=dev' --format '{{.ID}}')"
+
+  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageItemCRUDServiceImpl:modifyItem","Args":["1","Pepperidge farm cookies","12","5","10"]}' || fail
+
+  docker stop "$(docker ps -n 1 --filter 'name=dev' --format '{{.ID}}')"
+
+  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageItemCRUDServiceImpl:deleteItem","Args":["1"]}' || fail
+
+  if pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageItemCRUDServiceImpl:deleteItem","Args":["1"]}'; then
+    fail 'Cannot delete the same item twice'
+  fi
+}
+
 source shunit2
