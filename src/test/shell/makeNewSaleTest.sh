@@ -111,6 +111,10 @@ testCashPayment() {
             sed -n -r 's/.+status:200[[:space:]]+payload:"(.+)"[[:space:]]*$/\1/p' )
 
   assertEquals "Total sale amount is incorrect." "20.0" "$output"
+  writes=$(getBlockInfo | jq '.. |.ns_rwset? | .[]? | select(.namespace=="cocome"?)  | .rwset.writes')
+  if [[ "$writes" == "[]" ]] || [[ "$writes" == "null" ]] || [[ -z "$writes" ]]; then
+    fail 'endSale should produce non-empty write set.' || return
+  fi
 }
 
 source shunit2
