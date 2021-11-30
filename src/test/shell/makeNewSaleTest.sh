@@ -49,6 +49,11 @@ setUp() {
 	)
 }
 
+getBlockInfo() {
+  peer channel fetch newest mychannel.block -c mychannel -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile ${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+  configtxlator proto_decode --type common.Block --input mychannel.block
+}
+
 testMakeNewSale() {
   pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageStoreCRUDServiceImpl:createStore","Args":["1","Target","Weyburn","false"]}' || fail
   pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageCashDeskCRUDServiceImpl:createCashDesk","Args":["1","1","false"]}' || fail
@@ -93,7 +98,15 @@ testCashPayment() {
   pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMESystemImpl:openCashDesk","Args":["1"]}' || fail
   pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeNewSale","Args":[]}' || fail
 
-  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:enterItem","Args":["1","2"]}' || fail
+  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:enterItem","Args":["1","2"]}'
+
+  # In read-write set, find the one targeting cocome,
+  # and make sure the write set is not empty.
+  writes=$(getBlockInfo | jq '.. |.ns_rwset? | .[]? | select(.namespace=="cocome"?)  | .rwset.writes')
+  if [[ "$writes" == "[]" ]] || [[ "$writes" == "null" ]] || [[ -z "$writes" ]]; then
+    fail 'enterItem should produce non-empty write set.' || return
+  fi
+
   output=$(pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:endSale","Args":[]}' 2>&1 |
             sed -n -r 's/.+status:200[[:space:]]+payload:"(.+)"[[:space:]]*$/\1/p' )
 
