@@ -121,6 +121,12 @@ testCashPayment() {
   if [[ "$writes" == "[]" ]] || [[ "$writes" == "null" ]] || [[ -z "$writes" ]]; then
     fail 'makeCashPayment should produce non-empty write set.' || return
   fi
+
+  # cannot use `pci .. && fail`
+  # When pci fails, the whole statement is false, when it is the last statement of the function, the function fails.
+  if pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeCashPayment","Args":["30"]}'; then
+    fail 'Cannot makeCashPayment twice'
+  fi
 }
 
 source shunit2
