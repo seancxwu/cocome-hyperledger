@@ -127,6 +127,8 @@ testCashPayment() {
   if pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeCashPayment","Args":["30"]}'; then
     fail 'Cannot makeCashPayment twice'
   fi
+  stockNumber=$(peer chaincode query -C mychannel -n cocome -c '{"function":"ManageItemCRUDServiceImpl:queryItem","Args":["1"]}' | jq '.stockNumber')
+  assertEquals "2 items are bought. The stock number should be reduced." "8" "$stockNumber"
 }
 
 source shunit2
