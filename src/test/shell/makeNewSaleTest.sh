@@ -115,6 +115,12 @@ testCashPayment() {
   if [[ "$writes" == "[]" ]] || [[ "$writes" == "null" ]] || [[ -z "$writes" ]]; then
     fail 'endSale should produce non-empty write set.' || return
   fi
+
+  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeCashPayment","Args":["30"]}'
+  writes=$(getBlockInfo | jq '.. |.ns_rwset? | .[]? | select(.namespace=="cocome"?)  | .rwset.writes')
+  if [[ "$writes" == "[]" ]] || [[ "$writes" == "null" ]] || [[ -z "$writes" ]]; then
+    fail 'makeCashPayment should produce non-empty write set.' || return
+  fi
 }
 
 source shunit2
