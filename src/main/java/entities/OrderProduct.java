@@ -1,5 +1,6 @@
 package entities;
 
+import com.owlike.genson.annotation.*;
 import services.impl.StandardOPs;
 import java.util.List;
 import java.util.LinkedList;
