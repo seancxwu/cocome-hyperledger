@@ -131,4 +131,31 @@ testCashPayment() {
   assertEquals "2 items are bought. The stock number should be reduced." "8" "$stockNumber"
 }
 
+testManageSupplier() {
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageSupplierCRUDServiceImpl:createSupplier","Args":["1","McDonnell Douglas"]}' || fail || return
+
+	docker stop "$(docker ps -n 1 --filter 'name=dev' --format '{{.ID}}')"
+	# If there is no `-r`, jq will return string with quotes.
+	name=$(peer chaincode query -C mychannel -n cocome -c '{"function":"ManageSupplierCRUDServiceImpl:querySupplier","Args":["1"]}' | jq -r '.name')
+	assertEquals "Name failed to set." "McDonnell Douglas" "$name"
+
+	docker stop "$(docker ps -n 1 --filter 'name=dev' --format '{{.ID}}')"
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageSupplierCRUDServiceImpl:querySupplier","Args":["2"]}' && fail
+
+	docker stop "$(docker ps -n 1 --filter 'name=dev' --format '{{.ID}}')"
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageSupplierCRUDServiceImpl:modifySupplier","Args":["1","Boeing"]}' || fail || return
+
+	docker stop "$(docker ps -n 1 --filter 'name=dev' --format '{{.ID}}')"
+	name=$(peer chaincode query -C mychannel -n cocome -c '{"function":"ManageSupplierCRUDServiceImpl:querySupplier","Args":["1"]}' | jq -r '.name')
+	assertEquals "Name failed to set." "Boeing" "$name"
+
+	docker stop "$(docker ps -n 1 --filter 'name=dev' --format '{{.ID}}')"
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageSupplierCRUDServiceImpl:deleteSupplier","Args":["1"]}' || fail || return
+
+	docker stop "$(docker ps -n 1 --filter 'name=dev' --format '{{.ID}}')"
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageSupplierCRUDServiceImpl:deleteSupplier","Args":["1"]}' && fail
+
+	return 0
+}
+
 source shunit2
