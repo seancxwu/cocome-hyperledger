@@ -158,4 +158,27 @@ testManageSupplier() {
 	return 0
 }
 
+testReturnList() {
+	output=$(peer chaincode query -C mychannel -n cocome -c '{"function":"CoCoMESystemImpl:showStockReports","Args":[]}')
+	assertEquals "When there is no item, showStockReports should return empty array." "[]" "$output" || return
+
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageItemCRUDServiceImpl:createItem","Args":["1","cookies","10","10","9"]}'
+
+	output=$(peer chaincode query -C mychannel -n cocome -c '{"function":"CoCoMESystemImpl:showStockReports","Args":[]}')
+	assertContains "showStockReports should contain the cookies item" "$output" "cookies"
+
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageStoreCRUDServiceImpl:createStore","Args":["1","Target","Weyburn","false"]}'
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageCashDeskCRUDServiceImpl:createCashDesk","Args":["1","1","false"]}'
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMESystemImpl:openStore","Args":["1"]}'
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMESystemImpl:openCashDesk","Args":["1"]}'
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeNewSale","Args":[]}'
+
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:enterItem","Args":["1","10"]}'
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:endSale","Args":[]}'
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeCashPayment","Args":["100"]}'
+
+	output=$(peer chaincode query -C mychannel -n cocome -c '{"function":"CoCoMEOrderProductsImpl:listAllOutOfStoreProducts","Args":[]}')
+	assertContains "listAllOutOfStoreProducts should contain the cookies item" "$output" "cookies"
+}
+
 source shunit2
