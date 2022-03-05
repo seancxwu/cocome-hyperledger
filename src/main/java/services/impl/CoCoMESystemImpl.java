@@ -34,6 +34,8 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 			
 	public CoCoMESystemImpl() {
 		services = new ThirdPartyServicesImpl();
+
+		System.out.println("public CoCoMESystemImpl");
 	}
 
 				
@@ -294,11 +296,24 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 		}
 		//all relevant vars : sto
 		//all relevant entities : Store
-	} 
-	 
-	static {opINVRelatedEntity.put("closeStore", Arrays.asList("Store"));}
-	
-	
+	}
+
+	@Transaction(intent = Transaction.TYPE.SUBMIT)
+	public boolean closeCurrentStore(final Context ctx) {
+		ChaincodeStub stub = ctx.getStub();
+		EntityManager.setStub(stub);
+
+//		System.out.println("close " + currentStorePK.toString());
+		Store store = getCurrentStore();
+		store.setIsOpened(false);
+
+		EntityManager.saveModified(Store.class);
+		return true;
+	}
+
+	static {
+		opINVRelatedEntity.put("closeStore", Arrays.asList("Store"));
+	}
 	@Transaction(intent = Transaction.TYPE.SUBMIT)
 	public boolean changePrice(final Context ctx, int barcode, float newPrice) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		ChaincodeStub stub = ctx.getStub();
