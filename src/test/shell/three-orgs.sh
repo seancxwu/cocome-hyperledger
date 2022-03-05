@@ -23,12 +23,10 @@ oneTimeSetUp() {
 }
 
 setUp() {
+	(cd addOrg3; ./addOrg3.sh down)
 	./network.sh down
 	./network.sh up createChannel
-	(
-		cd addOrg3
-		./addOrg3.sh up
-	)
+	(cd addOrg3; ./addOrg3.sh up)
 
 	# start a subshell due to export variables.
 	(
@@ -83,19 +81,27 @@ function pci() {
 		"$@"
 }
 
+function pci23() {
+	# run command on org 2 and org 3.
+	peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --tls --cafile ${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem \
+		-C mychannel -n cocome --waitForEvent \
+		--peerAddresses localhost:9051 --tlsRootCertFiles ${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt \
+		--peerAddresses localhost:11051 --tlsRootCertFiles ${PWD}/organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/tls/ca.crt \
+		"$@"
+}
+
 testMakeNewSale() {
 	pci -c '{"function":"ManageStoreCRUDServiceImpl:createStore","Args":["1","Target","Weyburn","false"]}' || fail || return
-	pci -c '{"function":"ManageCashDeskCRUDServiceImpl:createCashDesk","Args":["1","1","false"]}' || fail || return
+	pci -c '{"function":"ManageStoreCRUDServiceImpl:createStore","Args":["2","Whole Foods","Gayley","false"]}' || fail || return
+
+#	pci -c '{"function":"ManageCashDeskCRUDServiceImpl:createCashDesk","Args":["1","1","false"]}' || fail || return
 	pci -c '{"function":"CoCoMESystemImpl:openStore","Args":["1"]}' || fail || return
-	pci -c '{"function":"CoCoMESystemImpl:openCashDesk","Args":["1"]}' || fail || return
 
-	docker stop "$(docker ps -n 1 --filter 'name=dev' --format '{{.ID}}')"
+	docker network disconnect fabric_test "$(docker ps --filter 'name=dev-peer0.org1' --format '{{.ID}}')"
+	pci23 -c '{"function":"CoCoMESystemImpl:openStore","Args":["2"]}' || fail || return
+	docker network connect fabric_test "$(docker ps --filter 'name=dev-peer0.org1' --format '{{.ID}}')"
 
-	pci -c '{"function":"ProcessSaleServiceImpl:makeNewSale","Args":[]}' || fail || return
-
-	if pci -c '{"function":"ProcessSaleServiceImpl:makeNewSale","Args":[]}'; then
-		fail 'Second makeNewSale call should fail.' || return
-	fi
+	pci -c '{"function":"CoCoMESystemImpl:closeCurrentStore","Args":[]}' || fail || return
 }
 
 source shunit2
