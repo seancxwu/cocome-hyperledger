@@ -58,6 +58,7 @@ public class CashDesk implements Serializable {
 	}
 	
 	/* all functions for reference*/
+	//The getter or setter of PK fields must be marked with @JsonIgnore.
 	@JsonIgnore
 	public List<Sale> getContainedSales() {
 		if (ContainedSales == null)
