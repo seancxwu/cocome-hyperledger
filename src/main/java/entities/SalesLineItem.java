@@ -45,8 +45,12 @@ public class SalesLineItem implements Serializable {
 	}
 	public float getSubamount() {
 		return subamount;
-	}	
-	
+	}
+
+	/**
+	 * item price * quantity
+	 * @param subamount
+	 */
 	public void setSubamount(float subamount) {
 		this.subamount = subamount;
 	}
