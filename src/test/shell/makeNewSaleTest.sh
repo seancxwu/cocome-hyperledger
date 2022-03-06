@@ -188,4 +188,13 @@ testReturnList() {
 	assertContains "listAllOutOfStoreProducts should contain the cookies item" "$output" "cookies"
 }
 
+testOrderProducts() {
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageSupplierCRUDServiceImpl:createSupplier","Args":["9","S9"]}'
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageItemCRUDServiceImpl:createItem","Args":["1","cookies","15","10","10"]}'
+
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMEOrderProductsImpl:makeNewOrder","Args":["1"]}'
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMEOrderProductsImpl:orderItem","Args":["1","10"]}' || fail || return
+
+}
+
 source shunit2
