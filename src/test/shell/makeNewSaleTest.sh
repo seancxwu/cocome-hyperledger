@@ -27,6 +27,10 @@ setUp() {
 		export CORE_PEER_ADDRESS=localhost:7051
 		# The package ID is the combination of the chaincode label and a hash of the chaincode binaries. Every peer will generate the same package ID.
 		packageId=$(peer lifecycle chaincode install $GITHUB_WORKSPACE/cocome.tar.gz 2>&1 | grep -o -P '(?<=identifier:\s).+:[\da-f]+$')
+		if [[ -z "$packageId" ]]; then
+			fail "Failed to install chaincode."
+			return
+		fi
 		peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com --channelID mychannel --name cocome --version 1.0 --package-id $packageId --sequence 1 --tls --cafile ${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 
 		export CORE_PEER_LOCALMSPID="Org2MSP"
