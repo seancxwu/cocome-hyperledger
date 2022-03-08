@@ -11,7 +11,7 @@ on:
       - 'src/test/shell/**'
       - '.github/workflows/check-shell.yml'
   pull_request:
-    branches: [ autorun ]
+    branches: [ autorun, dev ]
     paths:
       - 'src/test/shell/**'
       - '.github/workflows/check-shell.yml'
