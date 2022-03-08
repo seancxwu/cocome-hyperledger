@@ -6,12 +6,12 @@ name: check-shell
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master ]
+    branches: [ autorun, dev ]
     paths:
       - 'src/test/shell/**'
       - '.github/workflows/check-shell.yml'
   pull_request:
-    branches: [ master ]
+    branches: [ autorun ]
     paths:
       - 'src/test/shell/**'
       - '.github/workflows/check-shell.yml'
