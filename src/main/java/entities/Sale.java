@@ -1,6 +1,6 @@
 package entities;
 
-import services.impl.StandardOPs;
+import org.json.JSONPropertyIgnore;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.ArrayList;
@@ -81,6 +81,7 @@ public class Sale implements Serializable {
 	
 	/* all functions for reference*/
 	@JsonIgnore
+	@JSONPropertyIgnore
 	public Store getBelongedstore() {
 		if (Belongedstore == null)
 			Belongedstore = EntityManager.getStoreByPK(BelongedstorePK);
@@ -92,6 +93,7 @@ public class Sale implements Serializable {
 		this.BelongedstorePK = store.getPK();
 	}			
 	@JsonIgnore
+	@JSONPropertyIgnore
 	public CashDesk getBelongedCashDesk() {
 		if (BelongedCashDesk == null)
 			BelongedCashDesk = EntityManager.getCashDeskByPK(BelongedCashDeskPK);
@@ -103,6 +105,7 @@ public class Sale implements Serializable {
 		this.BelongedCashDeskPK = cashdesk.getPK();
 	}			
 	@JsonIgnore
+	@JSONPropertyIgnore
 	public List<SalesLineItem> getContainedSalesLine() {
 		if (ContainedSalesLine == null)
 			ContainedSalesLine = ContainedSalesLinePKs.stream().map(EntityManager::getSalesLineItemByPK).collect(Collectors.toList());

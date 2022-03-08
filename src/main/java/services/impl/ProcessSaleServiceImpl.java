@@ -22,6 +22,7 @@ import org.hyperledger.fabric.contract.*;
 import converters.*;
 import com.owlike.genson.GensonBuilder;
 import com.owlike.genson.Genson;
+import java.util.stream.Collectors;
 
 @Contract
 public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable, ContractInterface {
@@ -180,11 +181,20 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 		}
 		//all relevant vars : s this
 		//all relevant entities : Sale 
-	} 
-	 
-	static {opINVRelatedEntity.put("makeNewSale", Arrays.asList("Sale",""));}
-	
-	
+	}
+
+
+	@Transaction(intent = Transaction.TYPE.EVALUATE)
+	public Sale[] getCurrentCashDeskSales(final Context ctx) {
+		ChaincodeStub stub = ctx.getStub();
+		EntityManager.setStub(stub);
+
+		return getCurrentCashDesk().getContainedSales().toArray(Sale[]::new);
+	}
+
+	static {
+		opINVRelatedEntity.put("makeNewSale", Arrays.asList("Sale", ""));
+	}
 	@Transaction(intent = Transaction.TYPE.SUBMIT)
 	public boolean enterItem(final Context ctx, int barcode, int quantity) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		ChaincodeStub stub = ctx.getStub();

@@ -55,18 +55,25 @@ getBlockInfo() {
 }
 
 testMakeNewSale() {
-  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageStoreCRUDServiceImpl:createStore","Args":["1","Target","Weyburn","false"]}' || fail || return
-  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageCashDeskCRUDServiceImpl:createCashDesk","Args":["1","1","false"]}' || fail || return
-  pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMESystemImpl:openStore","Args":["1"]}' || fail || return
-  pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMESystemImpl:openCashDesk","Args":["1"]}' || fail || return
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageStoreCRUDServiceImpl:createStore","Args":["1","Target","Weyburn","false"]}' || fail || return
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageCashDeskCRUDServiceImpl:createCashDesk","Args":["1","1","false"]}' || fail || return
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMESystemImpl:openStore","Args":["1"]}' || fail || return
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMESystemImpl:openCashDesk","Args":["1"]}' || fail || return
 
-  docker stop "$(docker ps -n 1 --filter 'name=dev' --format '{{.ID}}')"
+	docker stop "$(docker ps -n 1 --filter 'name=dev' --format '{{.ID}}')"
 
-  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeNewSale","Args":[]}' || fail || return
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeNewSale","Args":[]}' || fail || return
 
-  if pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeNewSale","Args":[]}'; then
-    fail 'Second makeNewSale call should fail.' || return
-  fi
+	if pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeNewSale","Args":[]}'; then
+		fail 'Second makeNewSale call should fail.' || return
+	fi
+
+	output=$(peer chaincode query -C mychannel -n cocome -c '{"function":"ProcessSaleServiceImpl:getCurrentCashDeskSales","Args":[]}')
+	if (( $? != 0 )); then
+		fail || return
+	fi
+
+	assertNotEquals "Since we called makeNewSale, the current cash desk needs to have a Sale." "[]" "$output"
 }
 
 testManageItem() {
