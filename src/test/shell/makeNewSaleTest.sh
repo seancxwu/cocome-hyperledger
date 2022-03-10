@@ -97,45 +97,49 @@ testManageItem() {
 }
 
 testCashPayment() {
-  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageItemCRUDServiceImpl:createItem","Args":["1","cookies","10","10","9"]}' || fail || return
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageItemCRUDServiceImpl:createItem","Args":["1","cookies","10","10","9"]}' || fail || return
 
-  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageStoreCRUDServiceImpl:createStore","Args":["1","Target","Weyburn","false"]}' || fail || return
-  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageCashDeskCRUDServiceImpl:createCashDesk","Args":["1","1","false"]}' || fail || return
-  pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMESystemImpl:openStore","Args":["1"]}' || fail || return
-  pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMESystemImpl:openCashDesk","Args":["1"]}' || fail || return
-  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeNewSale","Args":[]}' || fail || return
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageStoreCRUDServiceImpl:createStore","Args":["1","Target","Weyburn","false"]}' || fail || return
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ManageCashDeskCRUDServiceImpl:createCashDesk","Args":["1","1","false"]}' || fail || return
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMESystemImpl:openStore","Args":["1"]}' || fail || return
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMESystemImpl:openCashDesk","Args":["1"]}' || fail || return
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeNewSale","Args":[]}' || fail || return
 
-  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:enterItem","Args":["1","2"]}'
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:enterItem","Args":["1","2"]}'
 
-  # In read-write set, find the one targeting cocome,
-  # and make sure the write set is not empty.
-  writes=$(getBlockInfo | jq '.. |.ns_rwset? | .[]? | select(.namespace=="cocome"?)  | .rwset.writes')
-  if [[ "$writes" == "[]" ]] || [[ "$writes" == "null" ]] || [[ -z "$writes" ]]; then
-    fail 'enterItem should produce non-empty write set.' || return
-  fi
+	# In read-write set, find the one targeting cocome,
+	# and make sure the write set is not empty.
+	writes=$(getBlockInfo | jq '.. |.ns_rwset? | .[]? | select(.namespace=="cocome"?)  | .rwset.writes')
+	if [[ "$writes" == "[]" ]] || [[ "$writes" == "null" ]] || [[ -z "$writes" ]]; then
+		fail 'enterItem should produce non-empty write set.' || return
+	fi
 
-  output=$(pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:endSale","Args":[]}' 2>&1 |
-            sed -n -r 's/.+status:200[[:space:]]+payload:"(.+)"[[:space:]]*$/\1/p' )
+	output=$(pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:endSale","Args":[]}' 2>&1 |
+		sed -n -r 's/.+status:200[[:space:]]+payload:"(.+)"[[:space:]]*$/\1/p')
 
-  assertEquals "Total sale amount is incorrect." "20.0" "$output"
-  writes=$(getBlockInfo | jq '.. |.ns_rwset? | .[]? | select(.namespace=="cocome"?)  | .rwset.writes')
-  if [[ "$writes" == "[]" ]] || [[ "$writes" == "null" ]] || [[ -z "$writes" ]]; then
-    fail 'endSale should produce non-empty write set.' || return
-  fi
+	assertEquals "Total sale amount is incorrect." "20.0" "$output"
+	writes=$(getBlockInfo | jq '.. |.ns_rwset? | .[]? | select(.namespace=="cocome"?)  | .rwset.writes')
+	if [[ "$writes" == "[]" ]] || [[ "$writes" == "null" ]] || [[ -z "$writes" ]]; then
+		fail 'endSale should produce non-empty write set.' || return
+	fi
 
-  pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeCashPayment","Args":["30"]}'
-  writes=$(getBlockInfo | jq '.. |.ns_rwset? | .[]? | select(.namespace=="cocome"?)  | .rwset.writes')
-  if [[ "$writes" == "[]" ]] || [[ "$writes" == "null" ]] || [[ -z "$writes" ]]; then
-    fail 'makeCashPayment should produce non-empty write set.' || return
-  fi
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeCashPayment","Args":["30"]}'
+	writes=$(getBlockInfo | jq '.. |.ns_rwset? | .[]? | select(.namespace=="cocome"?)  | .rwset.writes')
+	if [[ "$writes" == "[]" ]] || [[ "$writes" == "null" ]] || [[ -z "$writes" ]]; then
+		fail 'makeCashPayment should produce non-empty write set.' || return
+	fi
 
-  # cannot use `pci .. && fail`
-  # When pci fails, the whole statement is false, when it is the last statement of the function, the function fails.
-  if pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeCashPayment","Args":["30"]}'; then
-    fail 'Cannot makeCashPayment twice'
-  fi
-  stockNumber=$(peer chaincode query -C mychannel -n cocome -c '{"function":"ManageItemCRUDServiceImpl:queryItem","Args":["1"]}' | jq '.stockNumber')
-  assertEquals "2 items are bought. The stock number should be reduced." "8" "$stockNumber"
+	# cannot use `pci .. && fail`
+	# When pci fails, the whole statement is false, when it is the last statement of the function, the function fails.
+	if pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeCashPayment","Args":["30"]}'; then
+		fail 'Cannot makeCashPayment twice'
+	fi
+	stockNumber=$(peer chaincode query -C mychannel -n cocome -c '{"function":"ManageItemCRUDServiceImpl:queryItem","Args":["1"]}' | jq '.stockNumber')
+	assertEquals "2 items are bought. The stock number should be reduced." "8" "$stockNumber"
+
+	if ! pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeNewSale","Args":[]}'; then
+		fail "should be ready to make a new sale" || return
+	fi
 }
 
 testManageSupplier() {
