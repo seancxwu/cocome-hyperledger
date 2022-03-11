@@ -1,10 +1,8 @@
 package entities;
 
 import services.impl.StandardOPs;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.ArrayList;
-import java.util.Arrays;
+
+import java.util.*;
 import java.time.LocalDate;
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -51,8 +49,13 @@ public class OrderEntry implements Serializable {
 	/* all functions for reference*/
 	@JsonIgnore
 	public Item getItem() {
-		if (Item == null)
+		if (Item == null) {
+			//PK is only of type GUID or int.
+			//But genson deserializes numbers to long if not otherwise indicated, so we have to set back to int.
+			if (ItemPK instanceof Long)
+				ItemPK = Math.toIntExact((long) ItemPK);
 			Item = EntityManager.getItemByPK(ItemPK);
+		}
 		return Item;
 	}	
 	
@@ -61,6 +64,15 @@ public class OrderEntry implements Serializable {
 		this.ItemPK = item.getPK();
 	}			
 	
+
+	public void prepareClone(HashSet<Object> prepared) {
+		if (prepared.contains(this))
+			return;
+		prepared.add(this);
+		if (getItem() != null)
+			getItem().prepareClone(prepared);
+
+	}
 
 
 }

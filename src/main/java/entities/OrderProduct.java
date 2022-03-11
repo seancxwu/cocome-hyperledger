@@ -2,10 +2,8 @@ package entities;
 
 import com.owlike.genson.annotation.*;
 import services.impl.StandardOPs;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.ArrayList;
-import java.util.Arrays;
+
+import java.util.*;
 import java.time.LocalDate;
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -34,6 +32,7 @@ public class OrderProduct implements Serializable {
 	@JsonProperty
 	private Object SupplierPK;
 	private Supplier Supplier; 
+
 	@JsonProperty
 	private List<Object> ContainedEntriesPKs = new LinkedList<>();
 	private List<OrderEntry> ContainedEntries = new LinkedList<OrderEntry>(); 
@@ -90,17 +89,29 @@ public class OrderProduct implements Serializable {
 	}	
 	
 	public void addContainedEntries(OrderEntry orderentry) {
+		//initialize the fields.
 		getContainedEntries();
 		this.ContainedEntriesPKs.add(orderentry.getPK());
 		this.ContainedEntries.add(orderentry);
 	}
 	
 	public void deleteContainedEntries(OrderEntry orderentry) {
+		//initialize the fields.
 		getContainedEntries();
 		this.ContainedEntriesPKs.remove(orderentry.getPK());
 		this.ContainedEntries.remove(orderentry);
 	}
-	
+
+	/**
+	 * load reference objects for later clone
+	 * @param prepared
+	 */
+	public void prepareClone(HashSet<Object> prepared) {
+		if(prepared.contains(this))
+			return;
+		prepared.add(this);
+		getContainedEntries().stream().forEach(obj->obj.prepareClone(prepared));
+	}
 
 
 }

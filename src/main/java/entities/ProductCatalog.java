@@ -1,10 +1,8 @@
 package entities;
 
 import services.impl.StandardOPs;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.ArrayList;
-import java.util.Arrays;
+
+import java.util.*;
 import java.time.LocalDate;
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -64,7 +62,13 @@ public class ProductCatalog implements Serializable {
 		this.ContainedItemsPKs.remove(item.getPK());
 		this.ContainedItems.remove(item);
 	}
-	
+
+	public void prepareClone(HashSet<Object> prepared) {
+		if (prepared.contains(this))
+			return;
+		prepared.add(this);
+		getContainedItems().stream().forEach(obj->obj.prepareClone(prepared));
+	}
 
 	/* invarints checking*/
 	public boolean ProductCatalog_UniqueProductCatalogId() {

@@ -399,11 +399,20 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 				
 			
 		}
+		System.out.println("ContainedEntries: " + op.getContainedEntries().size());
+
+
+
 		/* previous state in post-condition*/
 		/* service reference */
 		/* service temp attribute */
 		/* objects in definition */
+		op.prepareClone(new HashSet<>());
 		OrderProduct Pre_op = SerializationUtils.clone(op);
+
+//		op.getContainedEntries().get(0).getItem().setStockNumber(100);
+
+//		Pre_op.getContainedEntries().get(0).getItem().getStockNumber()
 
 		/* check precondition */
 		if (StandardOPs.oclIsundefined(op) == false) 
@@ -415,30 +424,34 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 			{
 				oe.getItem().setStockNumber(oe.getItem().getStockNumber()+oe.getQuantity());
 			}
-			
-			
+//			op.getContainedEntries().get(0).getItem().setStockNumber(100);
+//			if (Pre_op.getContainedEntries().get(0).getItem().getStockNumber() == 100)
+//				throw new RuntimeException("Clone didn't decouple two objects.");
+
+
 			;
 			// post-condition checking
 			if (!(op.getOrderStatus() == OrderStatus.RECEIVED
-			 && 
-			((Predicate<List>) (list) -> {	
-				Iterator<OrderEntry> oeIt =  list.iterator();
-				Iterator<OrderEntry> Pre_oeIt =  Pre_op.getContainedEntries().iterator();
-				OrderEntry oe = null;
-				OrderEntry Pre_oe = null;
-					while (oeIt.hasNext() && Pre_oeIt.hasNext()) {
-					oe = oeIt.next();
-					Pre_oe = Pre_oeIt.next();
-					if (!(oe.getItem().getStockNumber() == Pre_oe.getItem().getStockNumber()+oe.getQuantity())) {
-						return false;
-					}
-				}
-				return true;
-			}).test(op.getContainedEntries())
-			 && 
-			EntityManager.saveModified(OrderProduct.class)
-			 &&
-			true)) {
+					&&
+					((Predicate<List>) (list) -> {
+						Iterator<OrderEntry> oeIt = list.iterator();
+						Iterator<OrderEntry> Pre_oeIt = Pre_op.getContainedEntries().iterator();
+						OrderEntry oe = null;
+						OrderEntry Pre_oe = null;
+						while (oeIt.hasNext() && Pre_oeIt.hasNext()) {
+							oe = oeIt.next();
+							Pre_oe = Pre_oeIt.next();
+							if (!(oe.getItem().getStockNumber() == Pre_oe.getItem().getStockNumber() + oe.getQuantity())) {
+								System.out.printf("fail: %s, %s, %s\n", oe.getItem().getStockNumber(), Pre_oe.getItem().getStockNumber(), oe.getQuantity());
+								return false;
+							}
+						}
+						return true;
+					}).test(op.getContainedEntries())
+					&&
+					EntityManager.saveModified(OrderProduct.class) && EntityManager.saveModified(Item.class)
+					&&
+					true)) {
 				throw new PostconditionException();
 			}
 			

@@ -199,6 +199,14 @@ testOrderProducts() {
 	pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMEOrderProductsImpl:makeNewOrder","Args":["1"]}'
 	pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMEOrderProductsImpl:orderItem","Args":["1","10"]}' || fail || return
 
+	#	pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMEOrderProductsImpl:makeNewOrder","Args":["2"]}'
+	#	pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMEOrderProductsImpl:orderItem","Args":["1","5"]}'
+
+	pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMESystemImpl:receiveOrderedProduct","Args":["1"]}' || fail || return
+
+	stockNumber=$(peer chaincode query -C mychannel -n cocome -c '{"function":"ManageItemCRUDServiceImpl:queryItem","Args":["1"]}' | jq '.stockNumber')
+	assertEquals "stock number" "20" "$stockNumber"
+
 }
 
 source shunit2
