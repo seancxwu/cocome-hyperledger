@@ -29,7 +29,7 @@ public class CashDesk implements Serializable {
 	/* all references */
 	@JsonProperty
 	private List<Object> ContainedSalesPKs = new LinkedList<>();
-	private List<Sale> ContainedSales = new LinkedList<Sale>(); 
+	private List<Sale> ContainedSales;
 	@JsonProperty
 	private Object BelongedStorePK;
 	private Store BelongedStore; 

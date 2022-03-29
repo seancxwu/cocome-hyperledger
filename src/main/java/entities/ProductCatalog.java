@@ -25,7 +25,7 @@ public class ProductCatalog implements Serializable {
 	/* all references */
 	@JsonProperty
 	private List<Object> ContainedItemsPKs = new LinkedList<>();
-	private List<Item> ContainedItems = new LinkedList<Item>(); 
+	private List<Item> ContainedItems;
 	
 	/* all get and set functions */
 	public int getId() {

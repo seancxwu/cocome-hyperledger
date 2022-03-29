@@ -42,7 +42,7 @@ public class Sale implements Serializable {
 	private CashDesk BelongedCashDesk; 
 	@JsonProperty
 	private List<Object> ContainedSalesLinePKs = new LinkedList<>();
-	private List<SalesLineItem> ContainedSalesLine = new LinkedList<SalesLineItem>(); 
+	private List<SalesLineItem> ContainedSalesLine;
 	@JsonProperty
 	private Object AssoicatedPaymentPK;
 	private Payment AssoicatedPayment; 

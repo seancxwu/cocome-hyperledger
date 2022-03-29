@@ -31,19 +31,19 @@ public class Store implements Serializable {
 	/* all references */
 	@JsonProperty
 	private List<Object> AssociationCashdeskesPKs = new LinkedList<>();
-	private List<CashDesk> AssociationCashdeskes = new LinkedList<CashDesk>(); 
+	private List<CashDesk> AssociationCashdeskes;
 	@JsonProperty
 	private List<Object> ProductcatalogsPKs = new LinkedList<>();
-	private List<ProductCatalog> Productcatalogs = new LinkedList<ProductCatalog>(); 
+	private List<ProductCatalog> Productcatalogs;
 	@JsonProperty
 	private List<Object> ItemsPKs = new LinkedList<>();
-	private List<Item> Items = new LinkedList<Item>(); 
+	private List<Item> Items;
 	@JsonProperty
 	private List<Object> CashiersPKs = new LinkedList<>();
-	private List<Cashier> Cashiers = new LinkedList<Cashier>(); 
+	private List<Cashier> Cashiers;
 	@JsonProperty
 	private List<Object> SalesPKs = new LinkedList<>();
-	private List<Sale> Sales = new LinkedList<Sale>(); 
+	private List<Sale> Sales;
 	
 	/* all get and set functions */
 	public int getId() {

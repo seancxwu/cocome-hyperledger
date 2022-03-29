@@ -35,7 +35,7 @@ public class OrderProduct implements Serializable {
 
 	@JsonProperty
 	private List<Object> ContainedEntriesPKs = new LinkedList<>();
-	private List<OrderEntry> ContainedEntries = new LinkedList<OrderEntry>(); 
+	private List<OrderEntry> ContainedEntries;
 	
 	/* all get and set functions */
 	public int getId() {
