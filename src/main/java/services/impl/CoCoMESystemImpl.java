@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import org.apache.commons.lang3.SerializationUtils;
 import java.util.Iterator;
+import java.util.logging.Logger;
+
 import org.hyperledger.fabric.shim.*;
 import org.hyperledger.fabric.contract.annotation.*;
 import org.hyperledger.fabric.contract.*;
@@ -23,6 +25,7 @@ import com.owlike.genson.Genson;
 public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInterface {
 	private static final Genson genson = new Genson();
 	
+	private static final Logger logger = Logger.getLogger("CoCoMESystemImpl");
 	
 	public static Map<String, List<String>> opINVRelatedEntity = new HashMap<String, List<String>>();
 	
@@ -64,6 +67,8 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 				
 			
 		}
+		System.out.println("cd is " + genson.serialize(cd));
+		System.out.println("current store is " + genson.serialize(getCurrentStore()));
 		/* previous state in post-condition*/
 
 		/* check precondition */
