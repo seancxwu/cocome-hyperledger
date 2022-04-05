@@ -26,6 +26,8 @@ public class Payment implements Serializable {
 	private float amountTendered;
 	
 	/* all references */
+	@JsonProperty
+	private Object BelongedSalePK;
 	private Sale BelongedSale; 
 	
 	/* all get and set functions */
@@ -38,12 +40,16 @@ public class Payment implements Serializable {
 	}
 	
 	/* all functions for reference*/
+	@JsonIgnore
 	public Sale getBelongedSale() {
+		if (BelongedSale == null)
+			BelongedSale = EntityManager.getSaleByPK(BelongedSalePK);
 		return BelongedSale;
 	}	
 	
 	public void setBelongedSale(Sale sale) {
 		this.BelongedSale = sale;
+		this.BelongedSalePK = sale.getPK();
 	}			
 	
 

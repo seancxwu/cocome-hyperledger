@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import org.hyperledger.fabric.contract.annotation.*;
+import com.owlike.genson.annotation.*;
 
 @DataType()
 public class Item implements Serializable {
@@ -29,6 +30,8 @@ public class Item implements Serializable {
 	private float orderPrice;
 	
 	/* all references */
+	@JsonProperty
+	private Object BelongedCatalogPK;
 	private ProductCatalog BelongedCatalog; 
 	
 	/* all get and set functions */
@@ -69,12 +72,16 @@ public class Item implements Serializable {
 	}
 	
 	/* all functions for reference*/
+	@JsonIgnore
 	public ProductCatalog getBelongedCatalog() {
+		if (BelongedCatalog == null)
+			BelongedCatalog = EntityManager.getProductCatalogByPK(BelongedCatalogPK);
 		return BelongedCatalog;
 	}	
 	
 	public void setBelongedCatalog(ProductCatalog productcatalog) {
 		this.BelongedCatalog = productcatalog;
+		this.BelongedCatalogPK = productcatalog.getPK();
 	}			
 	
 

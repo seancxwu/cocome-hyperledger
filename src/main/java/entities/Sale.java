@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import org.hyperledger.fabric.contract.annotation.*;
 import converters.*;
 import com.owlike.genson.annotation.*;
+import java.util.stream.*;
 
 @DataType()
 public class Sale implements Serializable {
@@ -33,9 +34,17 @@ public class Sale implements Serializable {
 	private boolean isReadytoPay;
 	
 	/* all references */
+	@JsonProperty
+	private Object BelongedstorePK;
 	private Store Belongedstore; 
+	@JsonProperty
+	private Object BelongedCashDeskPK;
 	private CashDesk BelongedCashDesk; 
+	@JsonProperty
+	private List<Object> ContainedSalesLinePKs = new LinkedList<>();
 	private List<SalesLineItem> ContainedSalesLine = new LinkedList<SalesLineItem>(); 
+	@JsonProperty
+	private Object AssoicatedPaymentPK;
 	private Payment AssoicatedPayment; 
 	
 	/* all get and set functions */
@@ -71,37 +80,56 @@ public class Sale implements Serializable {
 	}
 	
 	/* all functions for reference*/
+	@JsonIgnore
 	public Store getBelongedstore() {
+		if (Belongedstore == null)
+			Belongedstore = EntityManager.getStoreByPK(BelongedstorePK);
 		return Belongedstore;
 	}	
 	
 	public void setBelongedstore(Store store) {
 		this.Belongedstore = store;
+		this.BelongedstorePK = store.getPK();
 	}			
+	@JsonIgnore
 	public CashDesk getBelongedCashDesk() {
+		if (BelongedCashDesk == null)
+			BelongedCashDesk = EntityManager.getCashDeskByPK(BelongedCashDeskPK);
 		return BelongedCashDesk;
 	}	
 	
 	public void setBelongedCashDesk(CashDesk cashdesk) {
 		this.BelongedCashDesk = cashdesk;
+		this.BelongedCashDeskPK = cashdesk.getPK();
 	}			
+	@JsonIgnore
 	public List<SalesLineItem> getContainedSalesLine() {
+		if (ContainedSalesLine == null)
+			ContainedSalesLine = ContainedSalesLinePKs.stream().map(EntityManager::getSalesLineItemByPK).collect(Collectors.toList());
 		return ContainedSalesLine;
 	}	
 	
 	public void addContainedSalesLine(SalesLineItem saleslineitem) {
+		getContainedSalesLine();
+		this.ContainedSalesLinePKs.add(saleslineitem.getPK());
 		this.ContainedSalesLine.add(saleslineitem);
 	}
 	
 	public void deleteContainedSalesLine(SalesLineItem saleslineitem) {
+		getContainedSalesLine();
+		this.ContainedSalesLinePKs.remove(saleslineitem.getPK());
 		this.ContainedSalesLine.remove(saleslineitem);
 	}
+	@JsonIgnore
 	public Payment getAssoicatedPayment() {
+		if (AssoicatedPayment == null)
+			AssoicatedPayment = EntityManager.getPaymentByPK(AssoicatedPaymentPK);
 		return AssoicatedPayment;
 	}	
 	
 	public void setAssoicatedPayment(Payment payment) {
 		this.AssoicatedPayment = payment;
+		this.AssoicatedPaymentPK = payment.getPK();
 	}			
 	
 

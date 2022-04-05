@@ -28,7 +28,11 @@ public class SalesLineItem implements Serializable {
 	private float subamount;
 	
 	/* all references */
+	@JsonProperty
+	private Object BelongedSalePK;
 	private Sale BelongedSale; 
+	@JsonProperty
+	private Object BelongedItemPK;
 	private Item BelongedItem; 
 	
 	/* all get and set functions */
@@ -48,19 +52,27 @@ public class SalesLineItem implements Serializable {
 	}
 	
 	/* all functions for reference*/
+	@JsonIgnore
 	public Sale getBelongedSale() {
+		if (BelongedSale == null)
+			BelongedSale = EntityManager.getSaleByPK(BelongedSalePK);
 		return BelongedSale;
 	}	
 	
 	public void setBelongedSale(Sale sale) {
 		this.BelongedSale = sale;
+		this.BelongedSalePK = sale.getPK();
 	}			
+	@JsonIgnore
 	public Item getBelongedItem() {
+		if (BelongedItem == null)
+			BelongedItem = EntityManager.getItemByPK(BelongedItemPK);
 		return BelongedItem;
 	}	
 	
 	public void setBelongedItem(Item item) {
 		this.BelongedItem = item;
+		this.BelongedItemPK = item.getPK();
 	}			
 	
 

@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import org.hyperledger.fabric.contract.annotation.*;
+import com.owlike.genson.annotation.*;
 
 @DataType()
 public class Cashier implements Serializable {
@@ -23,6 +24,8 @@ public class Cashier implements Serializable {
 	private String name;
 	
 	/* all references */
+	@JsonProperty
+	private Object WorkedStorePK;
 	private Store WorkedStore; 
 	
 	/* all get and set functions */
@@ -42,12 +45,16 @@ public class Cashier implements Serializable {
 	}
 	
 	/* all functions for reference*/
+	@JsonIgnore
 	public Store getWorkedStore() {
+		if (WorkedStore == null)
+			WorkedStore = EntityManager.getStoreByPK(WorkedStorePK);
 		return WorkedStore;
 	}	
 	
 	public void setWorkedStore(Store store) {
 		this.WorkedStore = store;
+		this.WorkedStorePK = store.getPK();
 	}			
 	
 

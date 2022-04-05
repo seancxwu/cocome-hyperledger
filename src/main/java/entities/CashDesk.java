@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import org.hyperledger.fabric.contract.annotation.*;
+import com.owlike.genson.annotation.*;
+import java.util.stream.*;
 
 @DataType()
 public class CashDesk implements Serializable {
@@ -25,7 +27,11 @@ public class CashDesk implements Serializable {
 	private boolean isOpened;
 	
 	/* all references */
+	@JsonProperty
+	private List<Object> ContainedSalesPKs = new LinkedList<>();
 	private List<Sale> ContainedSales = new LinkedList<Sale>(); 
+	@JsonProperty
+	private Object BelongedStorePK;
 	private Store BelongedStore; 
 	
 	/* all get and set functions */
@@ -52,23 +58,34 @@ public class CashDesk implements Serializable {
 	}
 	
 	/* all functions for reference*/
+	@JsonIgnore
 	public List<Sale> getContainedSales() {
+		if (ContainedSales == null)
+			ContainedSales = ContainedSalesPKs.stream().map(EntityManager::getSaleByPK).collect(Collectors.toList());
 		return ContainedSales;
 	}	
 	
 	public void addContainedSales(Sale sale) {
+		getContainedSales();
+		this.ContainedSalesPKs.add(sale.getPK());
 		this.ContainedSales.add(sale);
 	}
 	
 	public void deleteContainedSales(Sale sale) {
+		getContainedSales();
+		this.ContainedSalesPKs.remove(sale.getPK());
 		this.ContainedSales.remove(sale);
 	}
+	@JsonIgnore
 	public Store getBelongedStore() {
+		if (BelongedStore == null)
+			BelongedStore = EntityManager.getStoreByPK(BelongedStorePK);
 		return BelongedStore;
 	}	
 	
 	public void setBelongedStore(Store store) {
 		this.BelongedStore = store;
+		this.BelongedStorePK = store.getPK();
 	}			
 	
 

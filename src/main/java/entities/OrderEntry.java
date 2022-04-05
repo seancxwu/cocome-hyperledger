@@ -28,6 +28,8 @@ public class OrderEntry implements Serializable {
 	private float subAmount;
 	
 	/* all references */
+	@JsonProperty
+	private Object ItemPK;
 	private Item Item; 
 	
 	/* all get and set functions */
@@ -47,12 +49,16 @@ public class OrderEntry implements Serializable {
 	}
 	
 	/* all functions for reference*/
+	@JsonIgnore
 	public Item getItem() {
+		if (Item == null)
+			Item = EntityManager.getItemByPK(ItemPK);
 		return Item;
 	}	
 	
 	public void setItem(Item item) {
 		this.Item = item;
+		this.ItemPK = item.getPK();
 	}			
 	
 

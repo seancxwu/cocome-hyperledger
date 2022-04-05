@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import org.hyperledger.fabric.contract.annotation.*;
 import converters.*;
 import com.owlike.genson.annotation.*;
+import java.util.stream.*;
 
 @DataType()
 public class OrderProduct implements Serializable {
@@ -29,7 +30,11 @@ public class OrderProduct implements Serializable {
 	private float amount;
 	
 	/* all references */
+	@JsonProperty
+	private Object SupplierPK;
 	private Supplier Supplier; 
+	@JsonProperty
+	private List<Object> ContainedEntriesPKs = new LinkedList<>();
 	private List<OrderEntry> ContainedEntries = new LinkedList<OrderEntry>(); 
 	
 	/* all get and set functions */
@@ -65,22 +70,33 @@ public class OrderProduct implements Serializable {
 	}
 	
 	/* all functions for reference*/
+	@JsonIgnore
 	public Supplier getSupplier() {
+		if (Supplier == null)
+			Supplier = EntityManager.getSupplierByPK(SupplierPK);
 		return Supplier;
 	}	
 	
 	public void setSupplier(Supplier supplier) {
 		this.Supplier = supplier;
+		this.SupplierPK = supplier.getPK();
 	}			
+	@JsonIgnore
 	public List<OrderEntry> getContainedEntries() {
+		if (ContainedEntries == null)
+			ContainedEntries = ContainedEntriesPKs.stream().map(EntityManager::getOrderEntryByPK).collect(Collectors.toList());
 		return ContainedEntries;
 	}	
 	
 	public void addContainedEntries(OrderEntry orderentry) {
+		getContainedEntries();
+		this.ContainedEntriesPKs.add(orderentry.getPK());
 		this.ContainedEntries.add(orderentry);
 	}
 	
 	public void deleteContainedEntries(OrderEntry orderentry) {
+		getContainedEntries();
+		this.ContainedEntriesPKs.remove(orderentry.getPK());
 		this.ContainedEntries.remove(orderentry);
 	}
 	
