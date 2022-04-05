@@ -67,7 +67,7 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 		/* previous state in post-condition*/
 
 		/* check precondition */
-		if (StandardOPs.oclIsundefined(cd) == false && cd.getIsOpened() == false && StandardOPs.oclIsundefined(currentStore) == false && currentStore.getIsOpened() == true) 
+		if (StandardOPs.oclIsundefined(cd) == false && cd.getIsOpened() == false && StandardOPs.oclIsundefined(getCurrentStore()) == false && getCurrentStore().getIsOpened() == true) 
 		{ 
 			/* Logic here */
 			this.setCurrentCashDesk(cd);
@@ -132,7 +132,7 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 		/* previous state in post-condition*/
 
 		/* check precondition */
-		if (StandardOPs.oclIsundefined(cd) == false && cd.getIsOpened() == true && StandardOPs.oclIsundefined(currentStore) == false && currentStore.getIsOpened() == true) 
+		if (StandardOPs.oclIsundefined(cd) == false && cd.getIsOpened() == true && StandardOPs.oclIsundefined(getCurrentStore()) == false && getCurrentStore().getIsOpened() == true) 
 		{ 
 			/* Logic here */
 			this.setCurrentCashDesk(cd);
@@ -519,23 +519,67 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 	
 	
 	/* temp property for controller */
+	private Object currentCashDeskPK;
 	private CashDesk currentCashDesk;
+	private Object currentStorePK;
 	private Store currentStore;
 			
 	/* all get and set functions for temp property*/
 	public CashDesk getCurrentCashDesk() {
-		return currentCashDesk;
+		return EntityManager.getCashDeskByPK(getCurrentCashDeskPK());
+	}
+
+	private Object getCurrentCashDeskPK() {
+		if (currentCashDeskPK == null)
+			currentCashDeskPK = genson.deserialize(EntityManager.stub.getStringState("system.currentCashDeskPK"), Integer.class);
+
+		return currentCashDeskPK;
 	}	
 	
 	public void setCurrentCashDesk(CashDesk currentcashdesk) {
+		if (currentcashdesk != null)
+			setCurrentCashDeskPK(currentcashdesk.getPK());
+		else
+			setCurrentCashDeskPK(null);
 		this.currentCashDesk = currentcashdesk;
 	}
+
+	private void setCurrentCashDeskPK(Object currentCashDeskPK) {
+		String json = genson.serialize(currentCashDeskPK);
+		EntityManager.stub.putStringState("system.currentCashDeskPK", json);
+		//If we set currentCashDeskPK to null, the getter thinks this fields is not initialized, thus will read the old value from chain.
+		if (currentCashDeskPK != null)
+			this.currentCashDeskPK = currentCashDeskPK;
+		else
+			this.currentCashDeskPK = EntityManager.getGuid();
+	}
 	public Store getCurrentStore() {
-		return currentStore;
+		return EntityManager.getStoreByPK(getCurrentStorePK());
+	}
+
+	private Object getCurrentStorePK() {
+		if (currentStorePK == null)
+			currentStorePK = genson.deserialize(EntityManager.stub.getStringState("system.currentStorePK"), Integer.class);
+
+		return currentStorePK;
 	}	
 	
 	public void setCurrentStore(Store currentstore) {
+		if (currentstore != null)
+			setCurrentStorePK(currentstore.getPK());
+		else
+			setCurrentStorePK(null);
 		this.currentStore = currentstore;
+	}
+
+	private void setCurrentStorePK(Object currentStorePK) {
+		String json = genson.serialize(currentStorePK);
+		EntityManager.stub.putStringState("system.currentStorePK", json);
+		//If we set currentStorePK to null, the getter thinks this fields is not initialized, thus will read the old value from chain.
+		if (currentStorePK != null)
+			this.currentStorePK = currentStorePK;
+		else
+			this.currentStorePK = EntityManager.getGuid();
 	}
 	
 	/* invarints checking*/

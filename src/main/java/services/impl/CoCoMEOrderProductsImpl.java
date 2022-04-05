@@ -37,23 +37,67 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 	//Shared variable from system services
 	
 	/* Shared variable from system services and get()/set() methods */
+	private Object currentCashDeskPK;
 	private CashDesk currentCashDesk;
+	private Object currentStorePK;
 	private Store currentStore;
 			
 	/* all get and set functions for temp property*/
 	public CashDesk getCurrentCashDesk() {
-		return currentCashDesk;
+		return EntityManager.getCashDeskByPK(getCurrentCashDeskPK());
+	}
+
+	private Object getCurrentCashDeskPK() {
+		if (currentCashDeskPK == null)
+			currentCashDeskPK = genson.deserialize(EntityManager.stub.getStringState("system.currentCashDeskPK"), Integer.class);
+
+		return currentCashDeskPK;
 	}	
 	
 	public void setCurrentCashDesk(CashDesk currentcashdesk) {
+		if (currentcashdesk != null)
+			setCurrentCashDeskPK(currentcashdesk.getPK());
+		else
+			setCurrentCashDeskPK(null);
 		this.currentCashDesk = currentcashdesk;
 	}
+
+	private void setCurrentCashDeskPK(Object currentCashDeskPK) {
+		String json = genson.serialize(currentCashDeskPK);
+		EntityManager.stub.putStringState("system.currentCashDeskPK", json);
+		//If we set currentCashDeskPK to null, the getter thinks this fields is not initialized, thus will read the old value from chain.
+		if (currentCashDeskPK != null)
+			this.currentCashDeskPK = currentCashDeskPK;
+		else
+			this.currentCashDeskPK = EntityManager.getGuid();
+	}
 	public Store getCurrentStore() {
-		return currentStore;
+		return EntityManager.getStoreByPK(getCurrentStorePK());
+	}
+
+	private Object getCurrentStorePK() {
+		if (currentStorePK == null)
+			currentStorePK = genson.deserialize(EntityManager.stub.getStringState("system.currentStorePK"), Integer.class);
+
+		return currentStorePK;
 	}	
 	
 	public void setCurrentStore(Store currentstore) {
+		if (currentstore != null)
+			setCurrentStorePK(currentstore.getPK());
+		else
+			setCurrentStorePK(null);
 		this.currentStore = currentstore;
+	}
+
+	private void setCurrentStorePK(Object currentStorePK) {
+		String json = genson.serialize(currentStorePK);
+		EntityManager.stub.putStringState("system.currentStorePK", json);
+		//If we set currentStorePK to null, the getter thinks this fields is not initialized, thus will read the old value from chain.
+		if (currentStorePK != null)
+			this.currentStorePK = currentStorePK;
+		else
+			this.currentStorePK = EntityManager.getGuid();
 	}
 				
 	
@@ -209,7 +253,7 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 			order.setSubAmount(item.getOrderPrice()*quantity);
 			order.setItem(item);
 			EntityManager.addObject("OrderEntry", order);
-			currentOrderProduct.addContainedEntries(order);
+			getCurrentOrderProduct().addContainedEntries(order);
 			
 			
 			;
@@ -223,7 +267,7 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 			 && 
 			StandardOPs.includes(((List<OrderEntry>)EntityManager.getAllInstancesOf(OrderEntry.class)), order)
 			 && 
-			StandardOPs.includes(currentOrderProduct.getContainedEntries(), order)
+			StandardOPs.includes(getCurrentOrderProduct().getContainedEntries(), order)
 			 && 
 			EntityManager.saveModified(OrderProduct.class)
 			 &&
@@ -277,15 +321,15 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 		/* previous state in post-condition*/
 
 		/* check precondition */
-		if (StandardOPs.oclIsundefined(sup) == false && StandardOPs.oclIsundefined(currentOrderProduct) == false) 
+		if (StandardOPs.oclIsundefined(sup) == false && StandardOPs.oclIsundefined(getCurrentOrderProduct()) == false) 
 		{ 
 			/* Logic here */
-			currentOrderProduct.setSupplier(sup);
+			getCurrentOrderProduct().setSupplier(sup);
 			
 			
 			;
 			// post-condition checking
-			if (!(currentOrderProduct.getSupplier() == sup
+			if (!(getCurrentOrderProduct().getSupplier() == sup
 			 && 
 			EntityManager.saveModified(OrderProduct.class)
 			 &&
@@ -325,24 +369,24 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 		/* previous state in post-condition*/
 		/* service reference */
 		/* service temp attribute */
-		OrderProduct Pre_currentOrderProduct = SerializationUtils.clone(currentOrderProduct);
+		OrderProduct Pre_currentOrderProduct = SerializationUtils.clone(getCurrentOrderProduct());
 		/* objects in definition */
 
 		/* check precondition */
-		if (StandardOPs.oclIsundefined(currentOrderProduct) == false) 
+		if (StandardOPs.oclIsundefined(getCurrentOrderProduct()) == false) 
 		{ 
 			/* Logic here */
-			currentOrderProduct.setOrderStatus(OrderStatus.REQUESTED);
+			getCurrentOrderProduct().setOrderStatus(OrderStatus.REQUESTED);
 			//no nested iterator --  iterator: forAll
-			for (OrderEntry o : currentOrderProduct.getContainedEntries())
+			for (OrderEntry o : getCurrentOrderProduct().getContainedEntries())
 			{
-				currentOrderProduct.setAmount(currentOrderProduct.getAmount()+o.getSubAmount());
+				getCurrentOrderProduct().setAmount(getCurrentOrderProduct().getAmount()+o.getSubAmount());
 			}
 			
 			
 			;
 			// post-condition checking
-			if (!(currentOrderProduct.getOrderStatus() == OrderStatus.REQUESTED
+			if (!(getCurrentOrderProduct().getOrderStatus() == OrderStatus.REQUESTED
 			 && 
 			((Predicate<List>) (list) -> {	
 				Iterator<OrderEntry> oIt =  list.iterator();
@@ -352,12 +396,12 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 					while (oIt.hasNext() && Pre_oIt.hasNext()) {
 					o = oIt.next();
 					Pre_o = Pre_oIt.next();
-					if (!(currentOrderProduct.getAmount() == Pre_currentOrderProduct.getAmount()+o.getSubAmount())) {
+					if (!(getCurrentOrderProduct().getAmount() == Pre_currentOrderProduct.getAmount()+o.getSubAmount())) {
 						return false;
 					}
 				}
 				return true;
-			}).test(currentOrderProduct.getContainedEntries())
+			}).test(getCurrentOrderProduct().getContainedEntries())
 			 && 
 			EntityManager.saveModified(OrderProduct.class)
 			 &&
@@ -384,15 +428,37 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 	
 	
 	/* temp property for controller */
+	private Object currentOrderProductPK;
 	private OrderProduct currentOrderProduct;
 			
 	/* all get and set functions for temp property*/
 	public OrderProduct getCurrentOrderProduct() {
-		return currentOrderProduct;
+		return EntityManager.getOrderProductByPK(getCurrentOrderProductPK());
+	}
+
+	private Object getCurrentOrderProductPK() {
+		if (currentOrderProductPK == null)
+			currentOrderProductPK = genson.deserialize(EntityManager.stub.getStringState("CoCoMEOrderProductsImpl.currentOrderProductPK"), Integer.class);
+
+		return currentOrderProductPK;
 	}	
 	
 	public void setCurrentOrderProduct(OrderProduct currentorderproduct) {
+		if (currentorderproduct != null)
+			setCurrentOrderProductPK(currentorderproduct.getPK());
+		else
+			setCurrentOrderProductPK(null);
 		this.currentOrderProduct = currentorderproduct;
+	}
+
+	private void setCurrentOrderProductPK(Object currentOrderProductPK) {
+		String json = genson.serialize(currentOrderProductPK);
+		EntityManager.stub.putStringState("CoCoMEOrderProductsImpl.currentOrderProductPK", json);
+		//If we set currentOrderProductPK to null, the getter thinks this fields is not initialized, thus will read the old value from chain.
+		if (currentOrderProductPK != null)
+			this.currentOrderProductPK = currentOrderProductPK;
+		else
+			this.currentOrderProductPK = EntityManager.getGuid();
 	}
 	
 	/* invarints checking*/

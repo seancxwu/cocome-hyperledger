@@ -39,23 +39,67 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 	//Shared variable from system services
 	
 	/* Shared variable from system services and get()/set() methods */
+	private Object currentCashDeskPK;
 	private CashDesk currentCashDesk;
+	private Object currentStorePK;
 	private Store currentStore;
 			
 	/* all get and set functions for temp property*/
 	public CashDesk getCurrentCashDesk() {
-		return currentCashDesk;
+		return EntityManager.getCashDeskByPK(getCurrentCashDeskPK());
+	}
+
+	private Object getCurrentCashDeskPK() {
+		if (currentCashDeskPK == null)
+			currentCashDeskPK = genson.deserialize(EntityManager.stub.getStringState("system.currentCashDeskPK"), Integer.class);
+
+		return currentCashDeskPK;
 	}	
 	
 	public void setCurrentCashDesk(CashDesk currentcashdesk) {
+		if (currentcashdesk != null)
+			setCurrentCashDeskPK(currentcashdesk.getPK());
+		else
+			setCurrentCashDeskPK(null);
 		this.currentCashDesk = currentcashdesk;
 	}
+
+	private void setCurrentCashDeskPK(Object currentCashDeskPK) {
+		String json = genson.serialize(currentCashDeskPK);
+		EntityManager.stub.putStringState("system.currentCashDeskPK", json);
+		//If we set currentCashDeskPK to null, the getter thinks this fields is not initialized, thus will read the old value from chain.
+		if (currentCashDeskPK != null)
+			this.currentCashDeskPK = currentCashDeskPK;
+		else
+			this.currentCashDeskPK = EntityManager.getGuid();
+	}
 	public Store getCurrentStore() {
-		return currentStore;
+		return EntityManager.getStoreByPK(getCurrentStorePK());
+	}
+
+	private Object getCurrentStorePK() {
+		if (currentStorePK == null)
+			currentStorePK = genson.deserialize(EntityManager.stub.getStringState("system.currentStorePK"), Integer.class);
+
+		return currentStorePK;
 	}	
 	
 	public void setCurrentStore(Store currentstore) {
+		if (currentstore != null)
+			setCurrentStorePK(currentstore.getPK());
+		else
+			setCurrentStorePK(null);
 		this.currentStore = currentstore;
+	}
+
+	private void setCurrentStorePK(Object currentStorePK) {
+		String json = genson.serialize(currentStorePK);
+		EntityManager.stub.putStringState("system.currentStorePK", json);
+		//If we set currentStorePK to null, the getter thinks this fields is not initialized, thus will read the old value from chain.
+		if (currentStorePK != null)
+			this.currentStorePK = currentStorePK;
+		else
+			this.currentStorePK = EntityManager.getGuid();
 	}
 				
 	
@@ -81,13 +125,13 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 		/* previous state in post-condition*/
 
 		/* check precondition */
-		if (StandardOPs.oclIsundefined(currentCashDesk) == false && currentCashDesk.getIsOpened() == true && (StandardOPs.oclIsundefined(currentSale) == true || (StandardOPs.oclIsundefined(currentSale) == false && currentSale.getIsComplete() == true))) 
+		if (StandardOPs.oclIsundefined(getCurrentCashDesk()) == false && getCurrentCashDesk().getIsOpened() == true && (StandardOPs.oclIsundefined(getCurrentSale()) == true || (StandardOPs.oclIsundefined(getCurrentSale()) == false && getCurrentSale().getIsComplete() == true))) 
 		{ 
 			/* Logic here */
 			Sale s = null;
 			s = (Sale) EntityManager.createObject("Sale");
-			s.setBelongedCashDesk(currentCashDesk);
-			currentCashDesk.addContainedSales(s);
+			s.setBelongedCashDesk(getCurrentCashDesk());
+			getCurrentCashDesk().addContainedSales(s);
 			s.setIsComplete(false);
 			s.setIsReadytoPay(false);
 			EntityManager.addObject("Sale", s);
@@ -97,9 +141,9 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 			;
 			// post-condition checking
 			if (!(true && 
-			s.getBelongedCashDesk() == currentCashDesk
+			s.getBelongedCashDesk() == getCurrentCashDesk()
 			 && 
-			StandardOPs.includes(currentCashDesk.getContainedSales(), s)
+			StandardOPs.includes(getCurrentCashDesk().getContainedSales(), s)
 			 && 
 			s.getIsComplete() == false
 			 && 
@@ -165,14 +209,14 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 		Item Pre_item = SerializationUtils.clone(item);
 
 		/* check precondition */
-		if (StandardOPs.oclIsundefined(currentSale) == false && currentSale.getIsComplete() == false && StandardOPs.oclIsundefined(item) == false && item.getStockNumber() > 0) 
+		if (StandardOPs.oclIsundefined(getCurrentSale()) == false && getCurrentSale().getIsComplete() == false && StandardOPs.oclIsundefined(item) == false && item.getStockNumber() > 0) 
 		{ 
 			/* Logic here */
 			SalesLineItem sli = null;
 			sli = (SalesLineItem) EntityManager.createObject("SalesLineItem");
 			this.setCurrentSaleLine(sli);
-			sli.setBelongedSale(currentSale);
-			currentSale.addContainedSalesLine(sli);
+			sli.setBelongedSale(getCurrentSale());
+			getCurrentSale().addContainedSalesLine(sli);
 			sli.setQuantity(quantity);
 			sli.setBelongedItem(item);
 			item.setStockNumber(item.getStockNumber()-quantity);
@@ -185,9 +229,9 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 			if (!(true && 
 			this.getCurrentSaleLine() == sli
 			 && 
-			sli.getBelongedSale() == currentSale
+			sli.getBelongedSale() == getCurrentSale()
 			 && 
-			StandardOPs.includes(currentSale.getContainedSalesLine(), sli)
+			StandardOPs.includes(getCurrentSale().getContainedSalesLine(), sli)
 			 && 
 			sli.getQuantity() == quantity
 			 && 
@@ -237,7 +281,7 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 		/* Code generated for contract definition */
 		//Get sls
 		List<SalesLineItem> sls = new LinkedList<>();
-		sls = currentSale.getContainedSalesLine();
+		sls = getCurrentSale().getContainedSalesLine();
 		//Get sub
 		List<Float> sub = new LinkedList<>();
 		//no nested iterator --  iterator: collect previous:collect
@@ -248,18 +292,18 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 		/* previous state in post-condition*/
 
 		/* check precondition */
-		if (StandardOPs.oclIsundefined(currentSale) == false && currentSale.getIsComplete() == false && currentSale.getIsReadytoPay() == false) 
+		if (StandardOPs.oclIsundefined(getCurrentSale()) == false && getCurrentSale().getIsComplete() == false && getCurrentSale().getIsReadytoPay() == false) 
 		{ 
 			/* Logic here */
-			currentSale.setAmount(StandardOPs.sum(sub));
-			currentSale.setIsReadytoPay(true);
+			getCurrentSale().setAmount(StandardOPs.sum(sub));
+			getCurrentSale().setIsReadytoPay(true);
 			
 			
 			;
 			// post-condition checking
-			if (!(currentSale.getAmount() == StandardOPs.sum(sub)
+			if (!(getCurrentSale().getAmount() == StandardOPs.sum(sub)
 			 && 
-			currentSale.getIsReadytoPay() == true
+			getCurrentSale().getIsReadytoPay() == true
 			 && 
 			EntityManager.saveModified(Sale.class)
 			 &&
@@ -270,7 +314,7 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 		
 			//return primitive type
 			;				
-			return currentSale.getAmount();
+			return getCurrentSale().getAmount();
 		}
 		else
 		{
@@ -299,19 +343,19 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 		/* previous state in post-condition*/
 
 		/* check precondition */
-		if (StandardOPs.oclIsundefined(currentSale) == false && currentSale.getIsComplete() == false && currentSale.getIsReadytoPay() == true && amount >= currentSale.getAmount()) 
+		if (StandardOPs.oclIsundefined(getCurrentSale()) == false && getCurrentSale().getIsComplete() == false && getCurrentSale().getIsReadytoPay() == true && amount >= getCurrentSale().getAmount()) 
 		{ 
 			/* Logic here */
 			CashPayment cp = null;
 			cp = (CashPayment) EntityManager.createObject("CashPayment");
 			cp.setAmountTendered(amount);
-			cp.setBelongedSale(currentSale);
-			currentSale.setAssoicatedPayment(cp);
-			currentSale.setBelongedstore(currentStore);
-			currentStore.addSales(currentSale);
-			currentSale.setIsComplete(true);
-			currentSale.setTime(LocalDate.now());
-			cp.setBalance(amount-currentSale.getAmount());
+			cp.setBelongedSale(getCurrentSale());
+			getCurrentSale().setAssoicatedPayment(cp);
+			getCurrentSale().setBelongedstore(getCurrentStore());
+			getCurrentStore().addSales(getCurrentSale());
+			getCurrentSale().setIsComplete(true);
+			getCurrentSale().setTime(LocalDate.now());
+			cp.setBalance(amount-getCurrentSale().getAmount());
 			EntityManager.addObject("CashPayment", cp);
 			
 			
@@ -320,19 +364,19 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 			if (!(true && 
 			cp.getAmountTendered() == amount
 			 && 
-			cp.getBelongedSale() == currentSale
+			cp.getBelongedSale() == getCurrentSale()
 			 && 
-			currentSale.getAssoicatedPayment() == cp
+			getCurrentSale().getAssoicatedPayment() == cp
 			 && 
-			currentSale.getBelongedstore() == currentStore
+			getCurrentSale().getBelongedstore() == getCurrentStore()
 			 && 
-			StandardOPs.includes(currentStore.getSales(), currentSale)
+			StandardOPs.includes(getCurrentStore().getSales(), getCurrentSale())
 			 && 
-			currentSale.getIsComplete() == true
+			getCurrentSale().getIsComplete() == true
 			 && 
-			currentSale.getTime().isEqual(LocalDate.now())
+			getCurrentSale().getTime().isEqual(LocalDate.now())
 			 && 
-			cp.getBalance() == amount-currentSale.getAmount()
+			cp.getBalance() == amount-getCurrentSale().getAmount()
 			 && 
 			StandardOPs.includes(((List<CashPayment>)EntityManager.getAllInstancesOf(CashPayment.class)), cp)
 			 && 
@@ -375,21 +419,21 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 		/* previous state in post-condition*/
 
 		/* check precondition */
-		if (StandardOPs.oclIsundefined(currentSale) == false && currentSale.getIsComplete() == false && currentSale.getIsReadytoPay() == true && services.thirdPartyCardPaymentService(cardAccountNumber, expiryDate, fee)) 
+		if (StandardOPs.oclIsundefined(getCurrentSale()) == false && getCurrentSale().getIsComplete() == false && getCurrentSale().getIsReadytoPay() == true && services.thirdPartyCardPaymentService(cardAccountNumber, expiryDate, fee)) 
 		{ 
 			/* Logic here */
 			CardPayment cdp = null;
 			cdp = (CardPayment) EntityManager.createObject("CardPayment");
 			cdp.setAmountTendered(fee);
-			cdp.setBelongedSale(currentSale);
-			currentSale.setAssoicatedPayment(cdp);
+			cdp.setBelongedSale(getCurrentSale());
+			getCurrentSale().setAssoicatedPayment(cdp);
 			cdp.setCardAccountNumber(cardAccountNumber);
 			cdp.setExpiryDate(expiryDate);
 			EntityManager.addObject("CardPayment", cdp);
-			currentSale.setBelongedstore(currentStore);
-			currentStore.addSales(currentSale);
-			currentSale.setIsComplete(true);
-			currentSale.setTime(LocalDate.now());
+			getCurrentSale().setBelongedstore(getCurrentStore());
+			getCurrentStore().addSales(getCurrentSale());
+			getCurrentSale().setIsComplete(true);
+			getCurrentSale().setTime(LocalDate.now());
 			
 			
 			;
@@ -397,9 +441,9 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 			if (!(true && 
 			cdp.getAmountTendered() == fee
 			 && 
-			cdp.getBelongedSale() == currentSale
+			cdp.getBelongedSale() == getCurrentSale()
 			 && 
-			currentSale.getAssoicatedPayment() == cdp
+			getCurrentSale().getAssoicatedPayment() == cdp
 			 && 
 			cdp.getCardAccountNumber() == cardAccountNumber
 			 && 
@@ -407,13 +451,13 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 			 && 
 			StandardOPs.includes(((List<CardPayment>)EntityManager.getAllInstancesOf(CardPayment.class)), cdp)
 			 && 
-			currentSale.getBelongedstore() == currentStore
+			getCurrentSale().getBelongedstore() == getCurrentStore()
 			 && 
-			StandardOPs.includes(currentStore.getSales(), currentSale)
+			StandardOPs.includes(getCurrentStore().getSales(), getCurrentSale())
 			 && 
-			currentSale.getIsComplete() == true
+			getCurrentSale().getIsComplete() == true
 			 && 
-			currentSale.getTime().isEqual(LocalDate.now())
+			getCurrentSale().getTime().isEqual(LocalDate.now())
 			 && 
 			EntityManager.saveModified(Sale.class) && EntityManager.saveModified(Store.class)
 			 &&
@@ -441,24 +485,68 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable,
 	
 	
 	/* temp property for controller */
+	private Object currentSaleLinePK;
 	private SalesLineItem currentSaleLine;
+	private Object currentSalePK;
 	private Sale currentSale;
 	private PaymentMethod currentPaymentMethod;
 			
 	/* all get and set functions for temp property*/
 	public SalesLineItem getCurrentSaleLine() {
-		return currentSaleLine;
+		return EntityManager.getSalesLineItemByPK(getCurrentSaleLinePK());
+	}
+
+	private Object getCurrentSaleLinePK() {
+		if (currentSaleLinePK == null)
+			currentSaleLinePK = genson.deserialize(EntityManager.stub.getStringState("ProcessSaleServiceImpl.currentSaleLinePK"), String.class);
+
+		return currentSaleLinePK;
 	}	
 	
 	public void setCurrentSaleLine(SalesLineItem currentsaleline) {
+		if (currentsaleline != null)
+			setCurrentSaleLinePK(currentsaleline.getPK());
+		else
+			setCurrentSaleLinePK(null);
 		this.currentSaleLine = currentsaleline;
 	}
+
+	private void setCurrentSaleLinePK(Object currentSaleLinePK) {
+		String json = genson.serialize(currentSaleLinePK);
+		EntityManager.stub.putStringState("ProcessSaleServiceImpl.currentSaleLinePK", json);
+		//If we set currentSaleLinePK to null, the getter thinks this fields is not initialized, thus will read the old value from chain.
+		if (currentSaleLinePK != null)
+			this.currentSaleLinePK = currentSaleLinePK;
+		else
+			this.currentSaleLinePK = EntityManager.getGuid();
+	}
 	public Sale getCurrentSale() {
-		return currentSale;
+		return EntityManager.getSaleByPK(getCurrentSalePK());
+	}
+
+	private Object getCurrentSalePK() {
+		if (currentSalePK == null)
+			currentSalePK = genson.deserialize(EntityManager.stub.getStringState("ProcessSaleServiceImpl.currentSalePK"), String.class);
+
+		return currentSalePK;
 	}	
 	
 	public void setCurrentSale(Sale currentsale) {
+		if (currentsale != null)
+			setCurrentSalePK(currentsale.getPK());
+		else
+			setCurrentSalePK(null);
 		this.currentSale = currentsale;
+	}
+
+	private void setCurrentSalePK(Object currentSalePK) {
+		String json = genson.serialize(currentSalePK);
+		EntityManager.stub.putStringState("ProcessSaleServiceImpl.currentSalePK", json);
+		//If we set currentSalePK to null, the getter thinks this fields is not initialized, thus will read the old value from chain.
+		if (currentSalePK != null)
+			this.currentSalePK = currentSalePK;
+		else
+			this.currentSalePK = EntityManager.getGuid();
 	}
 	public PaymentMethod getCurrentPaymentMethod() {
 		return currentPaymentMethod;
