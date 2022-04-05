@@ -15,7 +15,14 @@ import java.io.ObjectOutputStream;
 import java.io.FileInputStream;
 import java.io.File;
 
+import org.hyperledger.fabric.shim.ChaincodeStub;
+import com.owlike.genson.Genson;
+
 public class EntityManager {
+
+	private static final Genson genson = new Genson();
+
+	public static ChaincodeStub stub;
 
 	private static Map<String, List> AllInstance = new HashMap<String, List>();
 	
@@ -223,7 +230,13 @@ public class EntityManager {
 	}
 	
 	public static boolean addStoreObject(Store o) {
-		return StoreInstances.add(o);
+		List<Store> list = loadList(Store.class);
+		if (list.add(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("Store", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean addStoreObjects(List<Store> os) {
@@ -231,7 +244,13 @@ public class EntityManager {
 	}
 	
 	public static boolean deleteStoreObject(Store o) {
-		return StoreInstances.remove(o);
+		List<Store> list = loadList(Store.class);
+		if (list.remove(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("Store", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean deleteStoreObjects(List<Store> os) {
@@ -243,7 +262,13 @@ public class EntityManager {
 	}
 	
 	public static boolean addProductCatalogObject(ProductCatalog o) {
-		return ProductCatalogInstances.add(o);
+		List<ProductCatalog> list = loadList(ProductCatalog.class);
+		if (list.add(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("ProductCatalog", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean addProductCatalogObjects(List<ProductCatalog> os) {
@@ -251,7 +276,13 @@ public class EntityManager {
 	}
 	
 	public static boolean deleteProductCatalogObject(ProductCatalog o) {
-		return ProductCatalogInstances.remove(o);
+		List<ProductCatalog> list = loadList(ProductCatalog.class);
+		if (list.remove(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("ProductCatalog", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean deleteProductCatalogObjects(List<ProductCatalog> os) {
@@ -263,7 +294,13 @@ public class EntityManager {
 	}
 	
 	public static boolean addCashDeskObject(CashDesk o) {
-		return CashDeskInstances.add(o);
+		List<CashDesk> list = loadList(CashDesk.class);
+		if (list.add(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("CashDesk", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean addCashDeskObjects(List<CashDesk> os) {
@@ -271,7 +308,13 @@ public class EntityManager {
 	}
 	
 	public static boolean deleteCashDeskObject(CashDesk o) {
-		return CashDeskInstances.remove(o);
+		List<CashDesk> list = loadList(CashDesk.class);
+		if (list.remove(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("CashDesk", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean deleteCashDeskObjects(List<CashDesk> os) {
@@ -283,7 +326,13 @@ public class EntityManager {
 	}
 	
 	public static boolean addSaleObject(Sale o) {
-		return SaleInstances.add(o);
+		List<Sale> list = loadList(Sale.class);
+		if (list.add(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("Sale", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean addSaleObjects(List<Sale> os) {
@@ -291,7 +340,13 @@ public class EntityManager {
 	}
 	
 	public static boolean deleteSaleObject(Sale o) {
-		return SaleInstances.remove(o);
+		List<Sale> list = loadList(Sale.class);
+		if (list.remove(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("Sale", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean deleteSaleObjects(List<Sale> os) {
@@ -303,7 +358,13 @@ public class EntityManager {
 	}
 	
 	public static boolean addCashierObject(Cashier o) {
-		return CashierInstances.add(o);
+		List<Cashier> list = loadList(Cashier.class);
+		if (list.add(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("Cashier", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean addCashierObjects(List<Cashier> os) {
@@ -311,7 +372,13 @@ public class EntityManager {
 	}
 	
 	public static boolean deleteCashierObject(Cashier o) {
-		return CashierInstances.remove(o);
+		List<Cashier> list = loadList(Cashier.class);
+		if (list.remove(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("Cashier", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean deleteCashierObjects(List<Cashier> os) {
@@ -323,7 +390,13 @@ public class EntityManager {
 	}
 	
 	public static boolean addSalesLineItemObject(SalesLineItem o) {
-		return SalesLineItemInstances.add(o);
+		List<SalesLineItem> list = loadList(SalesLineItem.class);
+		if (list.add(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("SalesLineItem", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean addSalesLineItemObjects(List<SalesLineItem> os) {
@@ -331,7 +404,13 @@ public class EntityManager {
 	}
 	
 	public static boolean deleteSalesLineItemObject(SalesLineItem o) {
-		return SalesLineItemInstances.remove(o);
+		List<SalesLineItem> list = loadList(SalesLineItem.class);
+		if (list.remove(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("SalesLineItem", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean deleteSalesLineItemObjects(List<SalesLineItem> os) {
@@ -343,7 +422,13 @@ public class EntityManager {
 	}
 	
 	public static boolean addItemObject(Item o) {
-		return ItemInstances.add(o);
+		List<Item> list = loadList(Item.class);
+		if (list.add(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("Item", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean addItemObjects(List<Item> os) {
@@ -351,7 +436,13 @@ public class EntityManager {
 	}
 	
 	public static boolean deleteItemObject(Item o) {
-		return ItemInstances.remove(o);
+		List<Item> list = loadList(Item.class);
+		if (list.remove(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("Item", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean deleteItemObjects(List<Item> os) {
@@ -363,7 +454,13 @@ public class EntityManager {
 	}
 	
 	public static boolean addPaymentObject(Payment o) {
-		return PaymentInstances.add(o);
+		List<Payment> list = loadList(Payment.class);
+		if (list.add(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("Payment", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean addPaymentObjects(List<Payment> os) {
@@ -371,7 +468,13 @@ public class EntityManager {
 	}
 	
 	public static boolean deletePaymentObject(Payment o) {
-		return PaymentInstances.remove(o);
+		List<Payment> list = loadList(Payment.class);
+		if (list.remove(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("Payment", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean deletePaymentObjects(List<Payment> os) {
@@ -383,7 +486,13 @@ public class EntityManager {
 	}
 	
 	public static boolean addCashPaymentObject(CashPayment o) {
-		return CashPaymentInstances.add(o);
+		List<CashPayment> list = loadList(CashPayment.class);
+		if (list.add(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("CashPayment", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean addCashPaymentObjects(List<CashPayment> os) {
@@ -391,7 +500,13 @@ public class EntityManager {
 	}
 	
 	public static boolean deleteCashPaymentObject(CashPayment o) {
-		return CashPaymentInstances.remove(o);
+		List<CashPayment> list = loadList(CashPayment.class);
+		if (list.remove(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("CashPayment", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean deleteCashPaymentObjects(List<CashPayment> os) {
@@ -403,7 +518,13 @@ public class EntityManager {
 	}
 	
 	public static boolean addCardPaymentObject(CardPayment o) {
-		return CardPaymentInstances.add(o);
+		List<CardPayment> list = loadList(CardPayment.class);
+		if (list.add(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("CardPayment", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean addCardPaymentObjects(List<CardPayment> os) {
@@ -411,7 +532,13 @@ public class EntityManager {
 	}
 	
 	public static boolean deleteCardPaymentObject(CardPayment o) {
-		return CardPaymentInstances.remove(o);
+		List<CardPayment> list = loadList(CardPayment.class);
+		if (list.remove(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("CardPayment", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean deleteCardPaymentObjects(List<CardPayment> os) {
@@ -423,7 +550,13 @@ public class EntityManager {
 	}
 	
 	public static boolean addOrderEntryObject(OrderEntry o) {
-		return OrderEntryInstances.add(o);
+		List<OrderEntry> list = loadList(OrderEntry.class);
+		if (list.add(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("OrderEntry", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean addOrderEntryObjects(List<OrderEntry> os) {
@@ -431,7 +564,13 @@ public class EntityManager {
 	}
 	
 	public static boolean deleteOrderEntryObject(OrderEntry o) {
-		return OrderEntryInstances.remove(o);
+		List<OrderEntry> list = loadList(OrderEntry.class);
+		if (list.remove(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("OrderEntry", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean deleteOrderEntryObjects(List<OrderEntry> os) {
@@ -443,7 +582,13 @@ public class EntityManager {
 	}
 	
 	public static boolean addSupplierObject(Supplier o) {
-		return SupplierInstances.add(o);
+		List<Supplier> list = loadList(Supplier.class);
+		if (list.add(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("Supplier", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean addSupplierObjects(List<Supplier> os) {
@@ -451,7 +596,13 @@ public class EntityManager {
 	}
 	
 	public static boolean deleteSupplierObject(Supplier o) {
-		return SupplierInstances.remove(o);
+		List<Supplier> list = loadList(Supplier.class);
+		if (list.remove(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("Supplier", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean deleteSupplierObjects(List<Supplier> os) {
@@ -463,7 +614,13 @@ public class EntityManager {
 	}
 	
 	public static boolean addOrderProductObject(OrderProduct o) {
-		return OrderProductInstances.add(o);
+		List<OrderProduct> list = loadList(OrderProduct.class);
+		if (list.add(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("OrderProduct", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean addOrderProductObjects(List<OrderProduct> os) {
@@ -471,12 +628,38 @@ public class EntityManager {
 	}
 	
 	public static boolean deleteOrderProductObject(OrderProduct o) {
-		return OrderProductInstances.remove(o);
+		List<OrderProduct> list = loadList(OrderProduct.class);
+		if (list.remove(o)) {
+			String json = genson.serialize(list);
+			stub.putStringState("OrderProduct", json);
+			return true;
+		} else
+			return false;
 	}
 	
 	public static boolean deleteOrderProductObjects(List<OrderProduct> os) {
 		return OrderProductInstances.removeAll(os);
 	}
   
+
+	public static <T> List<T> getAllInstancesOf(Class<T> clazz) {
+		List<T> list = loadList(clazz);
+		return list;
+	}
+
+	private static <T> List<T> loadList(Class<T> clazz) {
+		String key = clazz.getSimpleName();
+		List<T> list = AllInstance.get(key);
+		if (list == null || list.size() == 0) {
+			String json = stub.getStringState(key);
+			System.out.printf("loadList %s: %s\n", key, json);
+			if (json != null && Objects.equals(json, "") == false)
+				list = GensonHelper.deserializeList(genson, json, clazz);
+			else
+				list = new LinkedList<>();
+			AllInstance.put(key, list);
+		}
+		return list;
+	}
 }
 
