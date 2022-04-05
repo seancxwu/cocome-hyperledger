@@ -33,40 +33,7 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 		services = new ThirdPartyServicesImpl();
 	}
 
-	public void refresh() {
-		ProcessSaleService processsaleservice_service = (ProcessSaleService) ServiceManager
-				.getAllInstancesOf(ProcessSaleService.class).get(0);
-		processsaleservice_service.setCurrentCashDesk(currentCashDesk);
-		processsaleservice_service.setCurrentStore(currentStore);
-		ManageStoreCRUDService managestorecrudservice_service = (ManageStoreCRUDService) ServiceManager
-				.getAllInstancesOf(ManageStoreCRUDService.class).get(0);
-		managestorecrudservice_service.setCurrentCashDesk(currentCashDesk);
-		managestorecrudservice_service.setCurrentStore(currentStore);
-		ManageProductCatalogCRUDService manageproductcatalogcrudservice_service = (ManageProductCatalogCRUDService) ServiceManager
-				.getAllInstancesOf(ManageProductCatalogCRUDService.class).get(0);
-		manageproductcatalogcrudservice_service.setCurrentCashDesk(currentCashDesk);
-		manageproductcatalogcrudservice_service.setCurrentStore(currentStore);
-		ManageCashDeskCRUDService managecashdeskcrudservice_service = (ManageCashDeskCRUDService) ServiceManager
-				.getAllInstancesOf(ManageCashDeskCRUDService.class).get(0);
-		managecashdeskcrudservice_service.setCurrentCashDesk(currentCashDesk);
-		managecashdeskcrudservice_service.setCurrentStore(currentStore);
-		ManageCashierCRUDService managecashiercrudservice_service = (ManageCashierCRUDService) ServiceManager
-				.getAllInstancesOf(ManageCashierCRUDService.class).get(0);
-		managecashiercrudservice_service.setCurrentCashDesk(currentCashDesk);
-		managecashiercrudservice_service.setCurrentStore(currentStore);
-		ManageItemCRUDService manageitemcrudservice_service = (ManageItemCRUDService) ServiceManager
-				.getAllInstancesOf(ManageItemCRUDService.class).get(0);
-		manageitemcrudservice_service.setCurrentCashDesk(currentCashDesk);
-		manageitemcrudservice_service.setCurrentStore(currentStore);
-		ManageSupplierCRUDService managesuppliercrudservice_service = (ManageSupplierCRUDService) ServiceManager
-				.getAllInstancesOf(ManageSupplierCRUDService.class).get(0);
-		managesuppliercrudservice_service.setCurrentCashDesk(currentCashDesk);
-		managesuppliercrudservice_service.setCurrentStore(currentStore);
-		CoCoMEOrderProducts cocomeorderproducts_service = (CoCoMEOrderProducts) ServiceManager
-				.getAllInstancesOf(CoCoMEOrderProducts.class).get(0);
-		cocomeorderproducts_service.setCurrentCashDesk(currentCashDesk);
-		cocomeorderproducts_service.setCurrentStore(currentStore);
-	}			
+				
 	
 	/* Generate buiness logic according to functional requirement */
 	
@@ -107,19 +74,21 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 			cd.setIsOpened(true);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(this.getCurrentCashDesk() == cd
 			 && 
 			cd.getIsOpened() == true
 			 && 
+			EntityManager.saveModified(CashDesk.class)
+			 &&
 			true)) {
 				throw new PostconditionException();
 			}
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
@@ -170,19 +139,21 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 			cd.setIsOpened(false);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(this.getCurrentCashDesk() == cd
 			 && 
 			cd.getIsOpened() == false
 			 && 
+			EntityManager.saveModified(CashDesk.class)
+			 &&
 			true)) {
 				throw new PostconditionException();
 			}
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
@@ -233,19 +204,21 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 			sto.setIsOpened(true);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(this.getCurrentStore() == sto
 			 && 
 			sto.getIsOpened() == true
 			 && 
+			EntityManager.saveModified(Store.class)
+			 &&
 			true)) {
 				throw new PostconditionException();
 			}
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
@@ -295,17 +268,19 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 			sto.setIsOpened(false);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(sto.getIsOpened() == false
 			 && 
+			EntityManager.saveModified(Store.class)
+			 &&
 			true)) {
 				throw new PostconditionException();
 			}
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
@@ -355,17 +330,19 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 			item.setPrice(newPrice);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(item.getPrice() == newPrice
 			 && 
+			EntityManager.saveModified(Item.class)
+			 &&
 			true)) {
 				throw new PostconditionException();
 			}
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
@@ -424,7 +401,7 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 			}
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(op.getOrderStatus() == OrderStatus.RECEIVED
 			 && 
@@ -443,13 +420,15 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 				return true;
 			}).test(op.getContainedEntries())
 			 && 
+			EntityManager.saveModified(OrderProduct.class)
+			 &&
 			true)) {
 				throw new PostconditionException();
 			}
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
@@ -484,13 +463,13 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 			/* Logic here */
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(true)) {
 				throw new PostconditionException();
 			}
 			
-			refresh(); return ((List<Supplier>)EntityManager.getAllInstancesOf(Supplier.class));
+			; return ((List<Supplier>)EntityManager.getAllInstancesOf(Supplier.class));
 		}
 		else
 		{
@@ -521,13 +500,13 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 			/* Logic here */
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(true)) {
 				throw new PostconditionException();
 			}
 			
-			refresh(); return ((List<Item>)EntityManager.getAllInstancesOf(Item.class));
+			; return ((List<Item>)EntityManager.getAllInstancesOf(Item.class));
 		}
 		else
 		{

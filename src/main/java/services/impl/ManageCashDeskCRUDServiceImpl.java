@@ -59,11 +59,7 @@ public class ManageCashDeskCRUDServiceImpl implements ManageCashDeskCRUDService,
 	
 	
 	/* Generate inject for sharing temp variables between use cases in system service */
-	public void refresh() {
-		CoCoMESystem cocomesystem_service = (CoCoMESystem) ServiceManager.getAllInstancesOf(CoCoMESystem.class).get(0);
-		cocomesystem_service.setCurrentCashDesk(currentCashDesk);
-		cocomesystem_service.setCurrentStore(currentStore);
-	}
+	
 	
 	/* Generate buiness logic according to functional requirement */
 	
@@ -108,7 +104,7 @@ public class ManageCashDeskCRUDServiceImpl implements ManageCashDeskCRUDService,
 			EntityManager.addObject("CashDesk", cas);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(true && 
 			cas.getId() == id
@@ -125,7 +121,7 @@ public class ManageCashDeskCRUDServiceImpl implements ManageCashDeskCRUDService,
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
@@ -175,13 +171,13 @@ public class ManageCashDeskCRUDServiceImpl implements ManageCashDeskCRUDService,
 			/* Logic here */
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(true)) {
 				throw new PostconditionException();
 			}
 			
-			refresh(); return cashdesk;
+			; return cashdesk;
 		}
 		else
 		{
@@ -229,7 +225,7 @@ public class ManageCashDeskCRUDServiceImpl implements ManageCashDeskCRUDService,
 			cashdesk.setIsOpened(isopened);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(cashdesk.getId() == id
 			 && 
@@ -237,13 +233,15 @@ public class ManageCashDeskCRUDServiceImpl implements ManageCashDeskCRUDService,
 			 && 
 			cashdesk.getIsOpened() == isopened
 			 && 
+			EntityManager.saveModified(CashDesk.class)
+			 &&
 			true)) {
 				throw new PostconditionException();
 			}
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
@@ -294,7 +292,7 @@ public class ManageCashDeskCRUDServiceImpl implements ManageCashDeskCRUDService,
 			EntityManager.deleteObject("CashDesk", cashdesk);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(StandardOPs.excludes(((List<CashDesk>)EntityManager.getAllInstancesOf(CashDesk.class)), cashdesk)
 			 && 
@@ -304,7 +302,7 @@ public class ManageCashDeskCRUDServiceImpl implements ManageCashDeskCRUDService,
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else

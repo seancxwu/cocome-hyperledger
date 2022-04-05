@@ -59,11 +59,7 @@ public class ManageCashierCRUDServiceImpl implements ManageCashierCRUDService, S
 	
 	
 	/* Generate inject for sharing temp variables between use cases in system service */
-	public void refresh() {
-		CoCoMESystem cocomesystem_service = (CoCoMESystem) ServiceManager.getAllInstancesOf(CoCoMESystem.class).get(0);
-		cocomesystem_service.setCurrentCashDesk(currentCashDesk);
-		cocomesystem_service.setCurrentStore(currentStore);
-	}
+	
 	
 	/* Generate buiness logic according to functional requirement */
 	
@@ -107,7 +103,7 @@ public class ManageCashierCRUDServiceImpl implements ManageCashierCRUDService, S
 			EntityManager.addObject("Cashier", cas);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(true && 
 			cas.getId() == id
@@ -122,7 +118,7 @@ public class ManageCashierCRUDServiceImpl implements ManageCashierCRUDService, S
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
@@ -172,13 +168,13 @@ public class ManageCashierCRUDServiceImpl implements ManageCashierCRUDService, S
 			/* Logic here */
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(true)) {
 				throw new PostconditionException();
 			}
 			
-			refresh(); return cashier;
+			; return cashier;
 		}
 		else
 		{
@@ -225,19 +221,21 @@ public class ManageCashierCRUDServiceImpl implements ManageCashierCRUDService, S
 			cashier.setName(name);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(cashier.getId() == id
 			 && 
 			cashier.getName() == name
 			 && 
+			EntityManager.saveModified(Cashier.class)
+			 &&
 			true)) {
 				throw new PostconditionException();
 			}
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
@@ -288,7 +286,7 @@ public class ManageCashierCRUDServiceImpl implements ManageCashierCRUDService, S
 			EntityManager.deleteObject("Cashier", cashier);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(StandardOPs.excludes(((List<Cashier>)EntityManager.getAllInstancesOf(Cashier.class)), cashier)
 			 && 
@@ -298,7 +296,7 @@ public class ManageCashierCRUDServiceImpl implements ManageCashierCRUDService, S
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else

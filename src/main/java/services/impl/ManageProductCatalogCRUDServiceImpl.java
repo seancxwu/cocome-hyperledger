@@ -59,11 +59,7 @@ public class ManageProductCatalogCRUDServiceImpl implements ManageProductCatalog
 	
 	
 	/* Generate inject for sharing temp variables between use cases in system service */
-	public void refresh() {
-		CoCoMESystem cocomesystem_service = (CoCoMESystem) ServiceManager.getAllInstancesOf(CoCoMESystem.class).get(0);
-		cocomesystem_service.setCurrentCashDesk(currentCashDesk);
-		cocomesystem_service.setCurrentStore(currentStore);
-	}
+	
 	
 	/* Generate buiness logic according to functional requirement */
 	
@@ -107,7 +103,7 @@ public class ManageProductCatalogCRUDServiceImpl implements ManageProductCatalog
 			EntityManager.addObject("ProductCatalog", pro);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(true && 
 			pro.getId() == id
@@ -122,7 +118,7 @@ public class ManageProductCatalogCRUDServiceImpl implements ManageProductCatalog
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
@@ -172,13 +168,13 @@ public class ManageProductCatalogCRUDServiceImpl implements ManageProductCatalog
 			/* Logic here */
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(true)) {
 				throw new PostconditionException();
 			}
 			
-			refresh(); return productcatalog;
+			; return productcatalog;
 		}
 		else
 		{
@@ -225,19 +221,21 @@ public class ManageProductCatalogCRUDServiceImpl implements ManageProductCatalog
 			productcatalog.setName(name);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(productcatalog.getId() == id
 			 && 
 			productcatalog.getName() == name
 			 && 
+			EntityManager.saveModified(ProductCatalog.class)
+			 &&
 			true)) {
 				throw new PostconditionException();
 			}
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
@@ -288,7 +286,7 @@ public class ManageProductCatalogCRUDServiceImpl implements ManageProductCatalog
 			EntityManager.deleteObject("ProductCatalog", productcatalog);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(StandardOPs.excludes(((List<ProductCatalog>)EntityManager.getAllInstancesOf(ProductCatalog.class)), productcatalog)
 			 && 
@@ -298,7 +296,7 @@ public class ManageProductCatalogCRUDServiceImpl implements ManageProductCatalog
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else

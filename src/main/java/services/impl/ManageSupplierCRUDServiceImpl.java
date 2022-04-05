@@ -59,11 +59,7 @@ public class ManageSupplierCRUDServiceImpl implements ManageSupplierCRUDService,
 	
 	
 	/* Generate inject for sharing temp variables between use cases in system service */
-	public void refresh() {
-		CoCoMESystem cocomesystem_service = (CoCoMESystem) ServiceManager.getAllInstancesOf(CoCoMESystem.class).get(0);
-		cocomesystem_service.setCurrentCashDesk(currentCashDesk);
-		cocomesystem_service.setCurrentStore(currentStore);
-	}
+	
 	
 	/* Generate buiness logic according to functional requirement */
 	
@@ -107,7 +103,7 @@ public class ManageSupplierCRUDServiceImpl implements ManageSupplierCRUDService,
 			EntityManager.addObject("Supplier", sup);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(true && 
 			sup.getId() == id
@@ -122,7 +118,7 @@ public class ManageSupplierCRUDServiceImpl implements ManageSupplierCRUDService,
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
@@ -172,13 +168,13 @@ public class ManageSupplierCRUDServiceImpl implements ManageSupplierCRUDService,
 			/* Logic here */
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(true)) {
 				throw new PostconditionException();
 			}
 			
-			refresh(); return supplier;
+			; return supplier;
 		}
 		else
 		{
@@ -225,19 +221,21 @@ public class ManageSupplierCRUDServiceImpl implements ManageSupplierCRUDService,
 			supplier.setName(name);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(supplier.getId() == id
 			 && 
 			supplier.getName() == name
 			 && 
+			EntityManager.saveModified(Supplier.class)
+			 &&
 			true)) {
 				throw new PostconditionException();
 			}
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
@@ -288,7 +286,7 @@ public class ManageSupplierCRUDServiceImpl implements ManageSupplierCRUDService,
 			EntityManager.deleteObject("Supplier", supplier);
 			
 			
-			refresh();
+			;
 			// post-condition checking
 			if (!(StandardOPs.excludes(((List<Supplier>)EntityManager.getAllInstancesOf(Supplier.class)), supplier)
 			 && 
@@ -298,7 +296,7 @@ public class ManageSupplierCRUDServiceImpl implements ManageSupplierCRUDService,
 			
 		
 			//return primitive type
-			refresh();				
+			;				
 			return true;
 		}
 		else
