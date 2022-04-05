@@ -680,5 +680,42 @@ public class EntityManager {
 			throw new RuntimeException();
 		}
 	}
+
+	public static ChaincodeStub getStub() {
+		return stub;
+	}
+
+	public static void setStub(ChaincodeStub stub) {
+		EntityManager.stub = stub;
+		random = null;
+
+		CardPaymentInstances = new LinkedList<>();
+		CashDeskInstances = new LinkedList<>();
+		CashPaymentInstances = new LinkedList<>();
+		CashierInstances = new LinkedList<>();
+		ItemInstances = new LinkedList<>();
+		OrderEntryInstances = new LinkedList<>();
+		OrderProductInstances = new LinkedList<>();
+		PaymentInstances = new LinkedList<>();
+		ProductCatalogInstances = new LinkedList<>();
+		SaleInstances = new LinkedList<>();
+		SalesLineItemInstances = new LinkedList<>();
+		StoreInstances = new LinkedList<>();
+		SupplierInstances = new LinkedList<>();
+
+		AllInstance.put("CardPayment", CardPaymentInstances);
+		AllInstance.put("CashDesk", CashDeskInstances);
+		AllInstance.put("CashPayment", CashPaymentInstances);
+		AllInstance.put("Cashier", CashierInstances);
+		AllInstance.put("Item", ItemInstances);
+		AllInstance.put("OrderEntry", OrderEntryInstances);
+		AllInstance.put("OrderProduct", OrderProductInstances);
+		AllInstance.put("Payment", PaymentInstances);
+		AllInstance.put("ProductCatalog", ProductCatalogInstances);
+		AllInstance.put("Sale", SaleInstances);
+		AllInstance.put("SalesLineItem", SalesLineItemInstances);
+		AllInstance.put("Store", StoreInstances);
+		AllInstance.put("Supplier", SupplierInstances);
+	}
 }
 
