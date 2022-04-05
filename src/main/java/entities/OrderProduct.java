@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import org.hyperledger.fabric.contract.annotation.*;
+import converters.*;
+import com.owlike.genson.annotation.*;
 
 @DataType()
 public class OrderProduct implements Serializable {
@@ -35,10 +37,12 @@ public class OrderProduct implements Serializable {
 	public void setId(int id) {
 		this.id = id;
 	}
+	@JsonConverter(LocalDateConverter.class)
 	public LocalDate getTime() {
 		return time;
 	}	
 	
+	@JsonConverter(LocalDateConverter.class)
 	public void setTime(LocalDate time) {
 		this.time = time;
 	}

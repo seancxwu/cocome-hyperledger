@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import org.hyperledger.fabric.contract.annotation.*;
+import converters.*;
+import com.owlike.genson.annotation.*;
 
 @DataType()
 public class Sale implements Serializable {
@@ -30,10 +32,12 @@ public class Sale implements Serializable {
 	private Payment AssoicatedPayment; 
 	
 	/* all get and set functions */
+	@JsonConverter(LocalDateConverter.class)
 	public LocalDate getTime() {
 		return time;
 	}	
 	
+	@JsonConverter(LocalDateConverter.class)
 	public void setTime(LocalDate time) {
 		this.time = time;
 	}

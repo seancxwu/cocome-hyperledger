@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import org.hyperledger.fabric.contract.annotation.*;
+import converters.*;
+import com.owlike.genson.annotation.*;
 
 @DataType()
 public class CardPayment extends Payment  implements Serializable {
@@ -29,10 +31,12 @@ public class CardPayment extends Payment  implements Serializable {
 	public void setCardAccountNumber(String cardaccountnumber) {
 		this.cardAccountNumber = cardaccountnumber;
 	}
+	@JsonConverter(LocalDateConverter.class)
 	public LocalDate getExpiryDate() {
 		return expiryDate;
 	}	
 	
+	@JsonConverter(LocalDateConverter.class)
 	public void setExpiryDate(LocalDate expirydate) {
 		this.expiryDate = expirydate;
 	}
