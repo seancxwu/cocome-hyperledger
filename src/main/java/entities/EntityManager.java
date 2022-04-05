@@ -717,5 +717,135 @@ public class EntityManager {
 		AllInstance.put("Store", StoreInstances);
 		AllInstance.put("Supplier", SupplierInstances);
 	}
+
+	public static CardPayment getCardPaymentByPK(Object pk) {
+		if (pk == null)
+			return null;
+		for (var i : EntityManager.getAllInstancesOf(CardPayment.class)) {
+			if (Objects.equals(i.getPK(), pk))
+				return i;
+		}
+		return null;
+	}
+
+	public static CashDesk getCashDeskByPK(Object pk) {
+		if (pk == null)
+			return null;
+		for (var i : EntityManager.getAllInstancesOf(CashDesk.class)) {
+			if (Objects.equals(i.getPK(), pk))
+				return i;
+		}
+		return null;
+	}
+
+	public static CashPayment getCashPaymentByPK(Object pk) {
+		if (pk == null)
+			return null;
+		for (var i : EntityManager.getAllInstancesOf(CashPayment.class)) {
+			if (Objects.equals(i.getPK(), pk))
+				return i;
+		}
+		return null;
+	}
+
+	public static Cashier getCashierByPK(Object pk) {
+		if (pk == null)
+			return null;
+		for (var i : EntityManager.getAllInstancesOf(Cashier.class)) {
+			if (Objects.equals(i.getPK(), pk))
+				return i;
+		}
+		return null;
+	}
+
+	public static Item getItemByPK(Object pk) {
+		if (pk == null)
+			return null;
+		for (var i : EntityManager.getAllInstancesOf(Item.class)) {
+			if (Objects.equals(i.getPK(), pk))
+				return i;
+		}
+		return null;
+	}
+
+	public static OrderEntry getOrderEntryByPK(Object pk) {
+		if (pk == null)
+			return null;
+		for (var i : EntityManager.getAllInstancesOf(OrderEntry.class)) {
+			if (Objects.equals(i.getPK(), pk))
+				return i;
+		}
+		return null;
+	}
+
+	public static OrderProduct getOrderProductByPK(Object pk) {
+		if (pk == null)
+			return null;
+		for (var i : EntityManager.getAllInstancesOf(OrderProduct.class)) {
+			if (Objects.equals(i.getPK(), pk))
+				return i;
+		}
+		return null;
+	}
+
+	public static Payment getPaymentByPK(Object pk) {
+		if (pk == null)
+			return null;
+		for (var i : EntityManager.getAllInstancesOf(Payment.class)) {
+			if (Objects.equals(i.getPK(), pk))
+				return i;
+		}
+		return null;
+	}
+
+	public static ProductCatalog getProductCatalogByPK(Object pk) {
+		if (pk == null)
+			return null;
+		for (var i : EntityManager.getAllInstancesOf(ProductCatalog.class)) {
+			if (Objects.equals(i.getPK(), pk))
+				return i;
+		}
+		return null;
+	}
+
+	public static Sale getSaleByPK(Object pk) {
+		if (pk == null)
+			return null;
+		for (var i : EntityManager.getAllInstancesOf(Sale.class)) {
+			if (Objects.equals(i.getPK(), pk))
+				return i;
+		}
+		return null;
+	}
+
+	public static SalesLineItem getSalesLineItemByPK(Object pk) {
+		if (pk == null)
+			return null;
+		for (var i : EntityManager.getAllInstancesOf(SalesLineItem.class)) {
+			if (Objects.equals(i.getPK(), pk))
+				return i;
+		}
+		return null;
+	}
+
+	public static Store getStoreByPK(Object pk) {
+		if (pk == null)
+			return null;
+		for (var i : EntityManager.getAllInstancesOf(Store.class)) {
+			if (Objects.equals(i.getPK(), pk))
+				return i;
+		}
+		return null;
+	}
+
+	public static Supplier getSupplierByPK(Object pk) {
+		if (pk == null)
+			return null;
+		for (var i : EntityManager.getAllInstancesOf(Supplier.class)) {
+			if (Objects.equals(i.getPK(), pk))
+				return i;
+		}
+		return null;
+	}
 }
 
