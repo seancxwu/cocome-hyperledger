@@ -127,12 +127,12 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 	
 	
 	@Transaction(intent = Transaction.TYPE.SUBMIT)
-	public List<Item> listAllOutOfStoreProducts(final Context ctx) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+	public Item[] listAllOutOfStoreProducts(final Context ctx) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		ChaincodeStub stub = ctx.getStub();
 		EntityManager.setStub(stub);
 
 		var res = listAllOutOfStoreProducts();
-		return res;
+		return res.toArray(Item[]::new);
 	}
 
 	@SuppressWarnings("unchecked")

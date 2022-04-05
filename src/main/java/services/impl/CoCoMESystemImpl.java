@@ -462,12 +462,12 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 	
 	
 	@Transaction(intent = Transaction.TYPE.SUBMIT)
-	public List<Supplier> listSuppliers(final Context ctx) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+	public Supplier[] listSuppliers(final Context ctx) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		ChaincodeStub stub = ctx.getStub();
 		EntityManager.setStub(stub);
 
 		var res = listSuppliers();
-		return res;
+		return res.toArray(Supplier[]::new);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -499,12 +499,12 @@ public class CoCoMESystemImpl implements CoCoMESystem, Serializable, ContractInt
 	
 	
 	@Transaction(intent = Transaction.TYPE.SUBMIT)
-	public List<Item> showStockReports(final Context ctx) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+	public Item[] showStockReports(final Context ctx) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		ChaincodeStub stub = ctx.getStub();
 		EntityManager.setStub(stub);
 
 		var res = showStockReports();
-		return res;
+		return res.toArray(Item[]::new);
 	}
 
 	@SuppressWarnings("unchecked")
