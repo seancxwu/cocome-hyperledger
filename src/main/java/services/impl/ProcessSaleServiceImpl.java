@@ -14,8 +14,14 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import org.apache.commons.lang3.SerializationUtils;
 import java.util.Iterator;
+import org.hyperledger.fabric.shim.*;
+import org.hyperledger.fabric.contract.annotation.*;
+import org.hyperledger.fabric.contract.*;
+import converters.*;
+import com.owlike.genson.GensonBuilder;
 
-public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable {
+@Contract
+public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable, ContractInterface {
 	
 	
 	public static Map<String, List<String>> opINVRelatedEntity = new HashMap<String, List<String>>();
@@ -54,12 +60,22 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable 
 	
 	/* Generate inject for sharing temp variables between use cases in system service */
 	public void refresh() {
-		CoCoMESystem cocomesystem_service = (CoCoMESystem) ServiceManager.getAllInstancesOf("CoCoMESystem").get(0);
+		CoCoMESystem cocomesystem_service = (CoCoMESystem) ServiceManager.getAllInstancesOf(CoCoMESystem.class).get(0);
 		cocomesystem_service.setCurrentCashDesk(currentCashDesk);
 		cocomesystem_service.setCurrentStore(currentStore);
 	}
 	
 	/* Generate buiness logic according to functional requirement */
+	
+	@Transaction(intent = Transaction.TYPE.SUBMIT)
+	public boolean makeNewSale(final Context ctx) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+		ChaincodeStub stub = ctx.getStub();
+		EntityManager.setStub(stub);
+
+		var res = makeNewSale();
+		return res;
+	}
+
 	@SuppressWarnings("unchecked")
 	public boolean makeNewSale() throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		
@@ -91,7 +107,7 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable 
 			 && 
 			s.getIsReadytoPay() == false
 			 && 
-			StandardOPs.includes(((List<Sale>)EntityManager.getAllInstancesOf("Sale")), s)
+			StandardOPs.includes(((List<Sale>)EntityManager.getAllInstancesOf(Sale.class)), s)
 			 && 
 			this.getCurrentSale() == s
 			 && 
@@ -114,6 +130,16 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable 
 	 
 	static {opINVRelatedEntity.put("makeNewSale", Arrays.asList("Sale",""));}
 	
+	
+	@Transaction(intent = Transaction.TYPE.SUBMIT)
+	public boolean enterItem(final Context ctx, int barcode, int quantity) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+		ChaincodeStub stub = ctx.getStub();
+		EntityManager.setStub(stub);
+
+		var res = enterItem(barcode, quantity);
+		return res;
+	}
+
 	@SuppressWarnings("unchecked")
 	public boolean enterItem(int barcode, int quantity) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		
@@ -122,7 +148,7 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable 
 		//Get item
 		Item item = null;
 		//no nested iterator --  iterator: any previous:any
-		for (Item i : (List<Item>)EntityManager.getAllInstancesOf("Item"))
+		for (Item i : (List<Item>)EntityManager.getAllInstancesOf(Item.class))
 		{
 			if (i.getBarcode() == barcode)
 			{
@@ -171,7 +197,7 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable 
 			 && 
 			sli.getSubamount() == item.getPrice()*quantity
 			 && 
-			StandardOPs.includes(((List<SalesLineItem>)EntityManager.getAllInstancesOf("SalesLineItem")), sli)
+			StandardOPs.includes(((List<SalesLineItem>)EntityManager.getAllInstancesOf(SalesLineItem.class)), sli)
 			 && 
 			true)) {
 				throw new PostconditionException();
@@ -192,6 +218,16 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable 
 	 
 	static {opINVRelatedEntity.put("enterItem", Arrays.asList("SalesLineItem","Item",""));}
 	
+	
+	@Transaction(intent = Transaction.TYPE.SUBMIT)
+	public float endSale(final Context ctx) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+		ChaincodeStub stub = ctx.getStub();
+		EntityManager.setStub(stub);
+
+		var res = endSale();
+		return res;
+	}
+
 	@SuppressWarnings("unchecked")
 	public float endSale() throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		
@@ -242,6 +278,16 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable 
 	 
 	static {opINVRelatedEntity.put("endSale", Arrays.asList(""));}
 	
+	
+	@Transaction(intent = Transaction.TYPE.SUBMIT)
+	public boolean makeCashPayment(final Context ctx, float amount) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+		ChaincodeStub stub = ctx.getStub();
+		EntityManager.setStub(stub);
+
+		var res = makeCashPayment(amount);
+		return res;
+	}
+
 	@SuppressWarnings("unchecked")
 	public boolean makeCashPayment(float amount) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		
@@ -284,7 +330,7 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable 
 			 && 
 			cp.getBalance() == amount-currentSale.getAmount()
 			 && 
-			StandardOPs.includes(((List<CashPayment>)EntityManager.getAllInstancesOf("CashPayment")), cp)
+			StandardOPs.includes(((List<CashPayment>)EntityManager.getAllInstancesOf(CashPayment.class)), cp)
 			 && 
 			true)) {
 				throw new PostconditionException();
@@ -305,6 +351,17 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable 
 	 
 	static {opINVRelatedEntity.put("makeCashPayment", Arrays.asList("","CashPayment"));}
 	
+	
+	@Transaction(intent = Transaction.TYPE.SUBMIT)
+	public boolean makeCardPayment(final Context ctx, String cardAccountNumber, String expiryDate, float fee) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+		ChaincodeStub stub = ctx.getStub();
+		EntityManager.setStub(stub);
+
+		var genson = new GensonBuilder().withConverters(new LocalDateConverter()).create();
+		var res = makeCardPayment(cardAccountNumber, genson.deserialize("\"" + expiryDate + "\"", LocalDate.class), fee);
+		return res;
+	}
+
 	@SuppressWarnings("unchecked")
 	public boolean makeCardPayment(String cardAccountNumber, LocalDate expiryDate, float fee) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		
@@ -342,7 +399,7 @@ public class ProcessSaleServiceImpl implements ProcessSaleService, Serializable 
 			 && 
 			cdp.getExpiryDate() == expiryDate
 			 && 
-			StandardOPs.includes(((List<CardPayment>)EntityManager.getAllInstancesOf("CardPayment")), cdp)
+			StandardOPs.includes(((List<CardPayment>)EntityManager.getAllInstancesOf(CardPayment.class)), cdp)
 			 && 
 			currentSale.getBelongedstore() == currentStore
 			 && 

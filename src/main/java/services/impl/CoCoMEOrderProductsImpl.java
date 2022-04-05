@@ -14,8 +14,12 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import org.apache.commons.lang3.SerializationUtils;
 import java.util.Iterator;
+import org.hyperledger.fabric.shim.*;
+import org.hyperledger.fabric.contract.annotation.*;
+import org.hyperledger.fabric.contract.*;
 
-public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializable {
+@Contract
+public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializable, ContractInterface {
 	
 	
 	public static Map<String, List<String>> opINVRelatedEntity = new HashMap<String, List<String>>();
@@ -54,12 +58,22 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 	
 	/* Generate inject for sharing temp variables between use cases in system service */
 	public void refresh() {
-		CoCoMESystem cocomesystem_service = (CoCoMESystem) ServiceManager.getAllInstancesOf("CoCoMESystem").get(0);
+		CoCoMESystem cocomesystem_service = (CoCoMESystem) ServiceManager.getAllInstancesOf(CoCoMESystem.class).get(0);
 		cocomesystem_service.setCurrentCashDesk(currentCashDesk);
 		cocomesystem_service.setCurrentStore(currentStore);
 	}
 	
 	/* Generate buiness logic according to functional requirement */
+	
+	@Transaction(intent = Transaction.TYPE.SUBMIT)
+	public boolean makeNewOrder(final Context ctx, int orderid) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+		ChaincodeStub stub = ctx.getStub();
+		EntityManager.setStub(stub);
+
+		var res = makeNewOrder(orderid);
+		return res;
+	}
+
 	@SuppressWarnings("unchecked")
 	public boolean makeNewOrder(int orderid) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		
@@ -88,7 +102,7 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 			 && 
 			op.getTime().isEqual(LocalDate.now())
 			 && 
-			StandardOPs.includes(((List<OrderProduct>)EntityManager.getAllInstancesOf("OrderProduct")), op)
+			StandardOPs.includes(((List<OrderProduct>)EntityManager.getAllInstancesOf(OrderProduct.class)), op)
 			 && 
 			this.getCurrentOrderProduct() == op
 			 && 
@@ -111,6 +125,16 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 	 
 	static {opINVRelatedEntity.put("makeNewOrder", Arrays.asList("OrderProduct",""));}
 	
+	
+	@Transaction(intent = Transaction.TYPE.SUBMIT)
+	public List<Item> listAllOutOfStoreProducts(final Context ctx) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+		ChaincodeStub stub = ctx.getStub();
+		EntityManager.setStub(stub);
+
+		var res = listAllOutOfStoreProducts();
+		return res;
+	}
+
 	@SuppressWarnings("unchecked")
 	public List<Item> listAllOutOfStoreProducts() throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		
@@ -123,7 +147,7 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 			/* Logic here */
 			List<Item> tempsitem = new LinkedList<>();
 			//no nested iterator --  iterator: select
-			for (Item item : ((List<Item>)EntityManager.getAllInstancesOf("Item")))
+			for (Item item : ((List<Item>)EntityManager.getAllInstancesOf(Item.class)))
 			{
 				if (item.getStockNumber() == 0)
 				{
@@ -147,6 +171,16 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 	} 
 	 
 	
+	
+	@Transaction(intent = Transaction.TYPE.SUBMIT)
+	public boolean orderItem(final Context ctx, int barcode, int quantity) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+		ChaincodeStub stub = ctx.getStub();
+		EntityManager.setStub(stub);
+
+		var res = orderItem(barcode, quantity);
+		return res;
+	}
+
 	@SuppressWarnings("unchecked")
 	public boolean orderItem(int barcode, int quantity) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		
@@ -155,7 +189,7 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 		//Get item
 		Item item = null;
 		//no nested iterator --  iterator: any previous:any
-		for (Item i : (List<Item>)EntityManager.getAllInstancesOf("Item"))
+		for (Item i : (List<Item>)EntityManager.getAllInstancesOf(Item.class))
 		{
 			if (i.getBarcode() == barcode)
 			{
@@ -189,7 +223,7 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 			 && 
 			order.getItem() == item
 			 && 
-			StandardOPs.includes(((List<OrderEntry>)EntityManager.getAllInstancesOf("OrderEntry")), order)
+			StandardOPs.includes(((List<OrderEntry>)EntityManager.getAllInstancesOf(OrderEntry.class)), order)
 			 && 
 			StandardOPs.includes(currentOrderProduct.getContainedEntries(), order)
 			 && 
@@ -212,6 +246,16 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 	 
 	static {opINVRelatedEntity.put("orderItem", Arrays.asList("OrderEntry"));}
 	
+	
+	@Transaction(intent = Transaction.TYPE.SUBMIT)
+	public boolean chooseSupplier(final Context ctx, int supplierID) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+		ChaincodeStub stub = ctx.getStub();
+		EntityManager.setStub(stub);
+
+		var res = chooseSupplier(supplierID);
+		return res;
+	}
+
 	@SuppressWarnings("unchecked")
 	public boolean chooseSupplier(int supplierID) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		
@@ -220,7 +264,7 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 		//Get sup
 		Supplier sup = null;
 		//no nested iterator --  iterator: any previous:any
-		for (Supplier s : (List<Supplier>)EntityManager.getAllInstancesOf("Supplier"))
+		for (Supplier s : (List<Supplier>)EntityManager.getAllInstancesOf(Supplier.class))
 		{
 			if (s.getId() == supplierID)
 			{
@@ -262,6 +306,16 @@ public class CoCoMEOrderProductsImpl implements CoCoMEOrderProducts, Serializabl
 	 
 	static {opINVRelatedEntity.put("chooseSupplier", Arrays.asList(""));}
 	
+	
+	@Transaction(intent = Transaction.TYPE.SUBMIT)
+	public boolean placeOrder(final Context ctx) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+		ChaincodeStub stub = ctx.getStub();
+		EntityManager.setStub(stub);
+
+		var res = placeOrder();
+		return res;
+	}
+
 	@SuppressWarnings("unchecked")
 	public boolean placeOrder() throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		

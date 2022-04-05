@@ -14,8 +14,14 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 import org.apache.commons.lang3.SerializationUtils;
 import java.util.Iterator;
+import org.hyperledger.fabric.shim.*;
+import org.hyperledger.fabric.contract.annotation.*;
+import org.hyperledger.fabric.contract.*;
+import converters.*;
+import com.owlike.genson.GensonBuilder;
 
-public class ThirdPartyServicesImpl implements ThirdPartyServices, Serializable {
+@Contract
+public class ThirdPartyServicesImpl implements ThirdPartyServices, Serializable, ContractInterface {
 	
 	
 	public static Map<String, List<String>> opINVRelatedEntity = new HashMap<String, List<String>>();
@@ -49,12 +55,23 @@ public class ThirdPartyServicesImpl implements ThirdPartyServices, Serializable 
 	
 	/* Generate inject for sharing temp variables between use cases in system service */
 	public void refresh() {
-		CoCoMESystem cocomesystem_service = (CoCoMESystem) ServiceManager.getAllInstancesOf("CoCoMESystem").get(0);
+		CoCoMESystem cocomesystem_service = (CoCoMESystem) ServiceManager.getAllInstancesOf(CoCoMESystem.class).get(0);
 		cocomesystem_service.setCurrentCashDesk(currentCashDesk);
 		cocomesystem_service.setCurrentStore(currentStore);
 	}
 	
 	/* Generate buiness logic according to functional requirement */
+	
+	@Transaction(intent = Transaction.TYPE.SUBMIT)
+	public boolean thirdPartyCardPaymentService(final Context ctx, String cardAccountNumber, String expiryDate, float fee) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
+		ChaincodeStub stub = ctx.getStub();
+		EntityManager.setStub(stub);
+
+		var genson = new GensonBuilder().withConverters(new LocalDateConverter()).create();
+		var res = thirdPartyCardPaymentService(cardAccountNumber, genson.deserialize("\"" + expiryDate + "\"", LocalDate.class), fee);
+		return res;
+	}
+
 	@SuppressWarnings("unchecked")
 	public boolean thirdPartyCardPaymentService(String cardAccountNumber, LocalDate expiryDate, float fee) throws PreconditionException, PostconditionException, ThirdPartyServiceException {
 		
