@@ -8,14 +8,20 @@ import java.util.Arrays;
 import java.time.LocalDate;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import org.hyperledger.fabric.contract.annotation.*;
 
+@DataType()
 public class OrderProduct implements Serializable {
 	
 	/* all primary attributes */
-	private int Id;
-	private LocalDate Time;
-	private OrderStatus OrderStatus;
-	private float Amount;
+	@Property()
+	private int id;
+	@Property()
+	private LocalDate time;
+	@Property()
+	private OrderStatus orderStatus;
+	@Property()
+	private float amount;
 	
 	/* all references */
 	private Supplier Supplier; 
@@ -23,32 +29,32 @@ public class OrderProduct implements Serializable {
 	
 	/* all get and set functions */
 	public int getId() {
-		return Id;
+		return id;
 	}	
 	
 	public void setId(int id) {
-		this.Id = id;
+		this.id = id;
 	}
 	public LocalDate getTime() {
-		return Time;
+		return time;
 	}	
 	
 	public void setTime(LocalDate time) {
-		this.Time = time;
+		this.time = time;
 	}
 	public OrderStatus getOrderStatus() {
-		return OrderStatus;
+		return orderStatus;
 	}	
 	
 	public void setOrderStatus(OrderStatus orderstatus) {
-		this.OrderStatus = orderstatus;
+		this.orderStatus = orderstatus;
 	}
 	public float getAmount() {
-		return Amount;
+		return amount;
 	}	
 	
 	public void setAmount(float amount) {
-		this.Amount = amount;
+		this.amount = amount;
 	}
 	
 	/* all functions for reference*/

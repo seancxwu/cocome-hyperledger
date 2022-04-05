@@ -8,21 +8,24 @@ import java.util.Arrays;
 import java.time.LocalDate;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import org.hyperledger.fabric.contract.annotation.*;
 
+@DataType()
 public class CashPayment extends Payment  implements Serializable {
 	
 	/* all primary attributes */
-	private float Balance;
+	@Property()
+	private float balance;
 	
 	/* all references */
 	
 	/* all get and set functions */
 	public float getBalance() {
-		return Balance;
+		return balance;
 	}	
 	
 	public void setBalance(float balance) {
-		this.Balance = balance;
+		this.balance = balance;
 	}
 	
 	/* all functions for reference*/
@@ -31,7 +34,7 @@ public class CashPayment extends Payment  implements Serializable {
 	/* invarints checking*/
 	public boolean CashPayment_BalanceGreatAndEqualZero() {
 		
-		if (Balance >= 0) {
+		if (balance >= 0) {
 			return true;
 		} else {
 			return false;

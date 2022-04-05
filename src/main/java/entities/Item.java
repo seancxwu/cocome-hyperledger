@@ -8,54 +8,61 @@ import java.util.Arrays;
 import java.time.LocalDate;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import org.hyperledger.fabric.contract.annotation.*;
 
+@DataType()
 public class Item implements Serializable {
 	
 	/* all primary attributes */
-	private int Barcode;
-	private String Name;
-	private float Price;
-	private int StockNumber;
-	private float OrderPrice;
+	@Property()
+	private int barcode;
+	@Property()
+	private String name;
+	@Property()
+	private float price;
+	@Property()
+	private int stockNumber;
+	@Property()
+	private float orderPrice;
 	
 	/* all references */
 	private ProductCatalog BelongedCatalog; 
 	
 	/* all get and set functions */
 	public int getBarcode() {
-		return Barcode;
+		return barcode;
 	}	
 	
 	public void setBarcode(int barcode) {
-		this.Barcode = barcode;
+		this.barcode = barcode;
 	}
 	public String getName() {
-		return Name;
+		return name;
 	}	
 	
 	public void setName(String name) {
-		this.Name = name;
+		this.name = name;
 	}
 	public float getPrice() {
-		return Price;
+		return price;
 	}	
 	
 	public void setPrice(float price) {
-		this.Price = price;
+		this.price = price;
 	}
 	public int getStockNumber() {
-		return StockNumber;
+		return stockNumber;
 	}	
 	
 	public void setStockNumber(int stocknumber) {
-		this.StockNumber = stocknumber;
+		this.stockNumber = stocknumber;
 	}
 	public float getOrderPrice() {
-		return OrderPrice;
+		return orderPrice;
 	}	
 	
 	public void setOrderPrice(float orderprice) {
-		this.OrderPrice = orderprice;
+		this.orderPrice = orderprice;
 	}
 	
 	/* all functions for reference*/
@@ -80,7 +87,7 @@ public class Item implements Serializable {
 	
 	public boolean Item_PriceGreatThanEqualZero() {
 		
-		if (Price >= 0) {
+		if (price >= 0) {
 			return true;
 		} else {
 			return false;
@@ -89,7 +96,7 @@ public class Item implements Serializable {
 	
 	public boolean Item_StockNumberGreatThanEqualZero() {
 		
-		if (StockNumber >= 0) {
+		if (stockNumber >= 0) {
 			return true;
 		} else {
 			return false;

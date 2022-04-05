@@ -8,30 +8,34 @@ import java.util.Arrays;
 import java.time.LocalDate;
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import org.hyperledger.fabric.contract.annotation.*;
 
+@DataType()
 public class OrderEntry implements Serializable {
 	
 	/* all primary attributes */
-	private int Quantity;
-	private float SubAmount;
+	@Property()
+	private int quantity;
+	@Property()
+	private float subAmount;
 	
 	/* all references */
 	private Item Item; 
 	
 	/* all get and set functions */
 	public int getQuantity() {
-		return Quantity;
+		return quantity;
 	}	
 	
 	public void setQuantity(int quantity) {
-		this.Quantity = quantity;
+		this.quantity = quantity;
 	}
 	public float getSubAmount() {
-		return SubAmount;
+		return subAmount;
 	}	
 	
 	public void setSubAmount(float subamount) {
-		this.SubAmount = subamount;
+		this.subAmount = subamount;
 	}
 	
 	/* all functions for reference*/
