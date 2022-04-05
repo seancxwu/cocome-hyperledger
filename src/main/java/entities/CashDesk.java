@@ -12,6 +12,9 @@ import org.hyperledger.fabric.contract.annotation.*;
 
 @DataType()
 public class CashDesk implements Serializable {
+	public Object getPK() {
+		return getId();
+	}
 	
 	/* all primary attributes */
 	@Property()

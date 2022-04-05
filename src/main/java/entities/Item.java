@@ -12,6 +12,9 @@ import org.hyperledger.fabric.contract.annotation.*;
 
 @DataType()
 public class Item implements Serializable {
+	public Object getPK() {
+		return getBarcode();
+	}
 	
 	/* all primary attributes */
 	@Property()

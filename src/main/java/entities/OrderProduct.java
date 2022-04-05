@@ -14,6 +14,9 @@ import com.owlike.genson.annotation.*;
 
 @DataType()
 public class OrderProduct implements Serializable {
+	public Object getPK() {
+		return getId();
+	}
 	
 	/* all primary attributes */
 	@Property()

@@ -12,6 +12,9 @@ import org.hyperledger.fabric.contract.annotation.*;
 
 @DataType()
 public class ProductCatalog implements Serializable {
+	public Object getPK() {
+		return getId();
+	}
 	
 	/* all primary attributes */
 	@Property()
