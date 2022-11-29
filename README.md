@@ -39,3 +39,4 @@ pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMESystemImpl:open
 pci -C mychannel -n cocome --waitForEvent -c '{"function":"CoCoMESystemImpl:openCashDesk","Args":["1"]}'
 pci -C mychannel -n cocome --waitForEvent -c '{"function":"ProcessSaleServiceImpl:makeNewSale","Args":[]}'
 ```
+
